@@ -42,5 +42,6 @@ void APoolItem::Tick(float DeltaTime)
 void APoolItem::Init(APoolManager* PoolManager)
 {
 	ParentPoolManager = PoolManager;
+	Initialized = true;
 }
 

@@ -18,10 +18,14 @@ public:
 	// Sets default values for this actor's properties
 	APoolItem();
 	virtual void Tick(float DeltaTime) override;
-	void Init(APoolManager* PoolManager);
+	virtual void Init(APoolManager* PoolManager);
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void FreeItem(){ParentPoolManager->FreeItem(this);}
+	FORCEINLINE void FreeItem()
+	{
+		Initialized = false;
+		ParentPoolManager->FreeItem(this);
+	}
 
 	void SetEnable(bool Enable);
 protected:
@@ -31,5 +35,8 @@ protected:
 public:
 	UPROPERTY()
 	TObjectPtr<APoolManager> ParentPoolManager;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool Initialized;
 	
 };
