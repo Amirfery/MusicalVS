@@ -113,9 +113,8 @@ void ACharacterSystem::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 	FVector TargetLoc = TargetEnemy->GetActorLocation();
 	FVector Dir = (TargetLoc - SpawnLoc).GetSafeNormal();
 
-	APoolItem* Projectile = ProjectilePoolManager->GetNewItem();
-	Projectile->SetActorLocation(SpawnLoc);
+	Item->SetActorLocation(SpawnLoc);
 	FRotator SpawnRot = Dir.Rotation();
-	Projectile->SetActorRotation(SpawnRot);
+	Item->SetActorRotation(SpawnRot);
 }
 
