@@ -25,6 +25,6 @@ protected:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Speed;
-	
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ACharacter> PlayerCharacter;	
 };
