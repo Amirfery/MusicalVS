@@ -58,11 +58,11 @@ void ACharacterSystem::FindAndAttackNearestEnemy()
 		Sphere
 	);
 
-	UE_LOG(LogTemp, Log, TEXT("[CharacterSystem] Checking for enemies..."));
+	// UE_LOG(LogTemp, Log, TEXT("[CharacterSystem] Checking for enemies..."));
 
 	if (!bHasHit)
 	{
-		UE_LOG(LogTemp, Log, TEXT("No enemies found within radius %.1f"), SearchRadius);
+		// UE_LOG(LogTemp, Log, TEXT("No enemies found within radius %.1f"), SearchRadius);
 		return;
 	}
 
@@ -78,7 +78,7 @@ void ACharacterSystem::FindAndAttackNearestEnemy()
 		if (AEnemy* Enemy = Cast<AEnemy>(Other))
 		{
 			float DistSq = FVector::DistSquared(PlayerLoc, Enemy->GetActorLocation());
-			UE_LOG(LogTemp, Log, TEXT("Found enemy: %s | Distance: %.1f"), *Enemy->GetName(), FMath::Sqrt(DistSq));
+			// UE_LOG(LogTemp, Log, TEXT("Found enemy: %s | Distance: %.1f"), *Enemy->GetName(), FMath::Sqrt(DistSq));
 
 			if (DistSq < MinDistSq)
 			{
@@ -90,7 +90,7 @@ void ACharacterSystem::FindAndAttackNearestEnemy()
 
 	if (NearestEnemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Nearest enemy: %s (%.1f units away)"), *NearestEnemy->GetName(), FMath::Sqrt(MinDistSq));
+		// UE_LOG(LogTemp, Warning, TEXT("Nearest enemy: %s (%.1f units away)"), *NearestEnemy->GetName(), FMath::Sqrt(MinDistSq));
 
 		DrawDebugLine(GetWorld(), PlayerLoc, NearestEnemy->GetActorLocation(), FColor::Red, false, 0.5f, 0, 2.f);
 
@@ -98,7 +98,7 @@ void ACharacterSystem::FindAndAttackNearestEnemy()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("Enemies overlapped, but none valid for attack."));
+		// UE_LOG(LogTemp, Log, TEXT("Enemies overlapped, but none valid for attack."));
 	}
 }
 
