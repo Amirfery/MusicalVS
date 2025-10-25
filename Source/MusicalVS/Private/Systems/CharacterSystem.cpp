@@ -22,7 +22,8 @@ ACharacterSystem::ACharacterSystem()
 void ACharacterSystem::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
+	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
+	// GetWorldTimerManager().SetTimer(AutoAttackTimer, [this, ]&ACharacterSystem::AoeAttack, 0.5f, true);
 }
 
 // Called every frame
@@ -102,6 +103,20 @@ void ACharacterSystem::FindAndAttackNearestEnemy()
 	}
 }
 
+void ACharacterSystem::AoeAttack(TSet<AActor*> EnemiesInRange, const FVector& CenterPoint, const float Radius)
+{
+	for (AActor* Enemy : EnemiesInRange)
+	{
+		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(Enemy->GetRootComponent()))
+		{
+			FVector Dir = (Enemy->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+			Dir.Z = 0.f;
+			Dir.Normalize();
+			Prim->AddImpulse(Dir * Radius, NAME_None, true);
+		}
+	}
+}
+
 void ACharacterSystem::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 {
 	if (!ProjectilePoolManager || !TargetEnemy) return;
@@ -117,4 +132,6 @@ void ACharacterSystem::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 	FRotator SpawnRot = Dir.Rotation();
 	Item->SetActorRotation(SpawnRot);
 }
+
+
 

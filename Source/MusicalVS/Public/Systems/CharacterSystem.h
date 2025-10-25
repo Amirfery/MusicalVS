@@ -39,5 +39,8 @@ private:
 	void Init(APoolManager* ProjectileManager);
 	void FindAndAttackNearestEnemy();
 
+	UFUNCTION(BlueprintCallable)
+	void AoeAttack(TSet<AActor*> EnemiesInRange, const FVector& CenterPoint, const float Radius);
+
 	void SpawnProjectileAtEnemy(const AActor* TargetEnemy) const;
 };
