@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CharacterSystem.generated.h"
 
+class AWeapnSystem;
 class APoolManager;
 
 UCLASS()
@@ -14,8 +15,10 @@ class MUSICALVS_API ACharacterSystem : public ACharacter
 	GENERATED_BODY()
 
 private:
+	static ACharacterSystem* Instance;
+
 	UPROPERTY(EditAnywhere)
-	APoolManager* ProjectilePoolManager;
+	TArray<AWeapnSystem*> Weapons;
 
 	FTimerHandle AutoAttackTimer;
 
@@ -34,13 +37,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static ACharacterSystem* GetCharacterInstance() {return Instance;}
+
 private:
 	UFUNCTION(BlueprintCallable)
-	void Init(APoolManager* ProjectileManager);
-	void FindAndAttackNearestEnemy();
-
-	UFUNCTION(BlueprintCallable)
-	void AoeAttack(TSet<AActor*> EnemiesInRange, const FVector& CenterPoint, const float Radius);
-
-	void SpawnProjectileAtEnemy(const AActor* TargetEnemy) const;
+	void Init();
 };
