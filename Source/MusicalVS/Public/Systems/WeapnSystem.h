@@ -27,6 +27,10 @@ private:
 	int32 Level = 0;
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UAttackData> WeaponData;
+
+public:
 	// Sets default values for this actor's properties
 	AWeapnSystem();
 
@@ -35,9 +39,6 @@ private:
 	void OnTimelineMarker(FString Name, int32 Position);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
-	TObjectPtr<UAttackData> WeaponData;
-	
 	virtual void BeginPlay() override;
 
 public:

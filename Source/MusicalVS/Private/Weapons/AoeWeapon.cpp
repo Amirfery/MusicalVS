@@ -3,6 +3,7 @@
 
 #include "Weapons/AoeWeapon.h"
 
+#include "Components/HealthComponent.h"
 #include "DataAssets/AttackData.h"
 #include "Systems/CharacterSystem.h"
 
@@ -11,23 +12,15 @@
 AAoeWeapon::AAoeWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->SetupAttachment(RootComponent);
 }
 
-// Called when the game starts or when spawned
-void AAoeWeapon::BeginPlay()
+void AAoeWeapon::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+	if (!IsValid(WeaponData))
+		return;
 	Radius = WeaponData->BaseRange;
 	Damage = WeaponData->BaseDamage;
-	
-	DetectionSphere->InitSphereRadius(Radius);
-	DetectionSphere->SetCollisionProfileName(TEXT("OverlapAll"));
-	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AAoeWeapon::OnEnemyEnterRange);
-	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AAoeWeapon::OnEnemyExitRange);
 }
 
 void AAoeWeapon::OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -39,6 +32,7 @@ void AAoeWeapon::OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		EnemiesInRange.Add(OtherActor);
 	}
+	UE_LOG(LogTemp, Warning, TEXT("%d"), EnemiesInRange.Num());
 }
 
 void AAoeWeapon::OnEnemyExitRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -66,7 +60,11 @@ void AAoeWeapon::Attack_Implementation()
 			FVector Dir = (Enemy->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 			Dir.Z = 0.f;
 			Dir.Normalize();
-			Prim->AddImpulse(Dir * Damage, NAME_None, true);
+			Prim->AddImpulse(Dir * WeaponData->BaseEffectTime, NAME_None, true);
+		}
+		if (UHealthComponent* HealthComponent = Enemy->GetComponentByClass<UHealthComponent>())
+		{
+			HealthComponent->DecreaseHealth(Damage);
 		}
 	}
 }

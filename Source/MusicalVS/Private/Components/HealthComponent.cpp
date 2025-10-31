@@ -23,6 +23,8 @@ void UHealthComponent::DecreaseHealth(const float Amount)
 	const float HealthDelta = CurrentHealth - PrevHealth;
 
 	OnHealthChanged.Broadcast(CurrentHealth, MaxHealth, HealthDelta);
+	if (CurrentHealth <= 0)
+		GetOwner()->Destroy();
 }
 
 void UHealthComponent::IncreaseHealth(const float Amount)

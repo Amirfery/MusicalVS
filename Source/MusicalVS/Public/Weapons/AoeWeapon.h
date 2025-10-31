@@ -14,15 +14,12 @@ class MUSICALVS_API AAoeWeapon : public AWeapnSystem
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	USphereComponent* DetectionSphere;
-
-	UPROPERTY(VisibleAnywhere)
 	TSet<AActor*> EnemiesInRange;
-
-	UPROPERTY(EditDefaultsOnly)
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Radius;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Damage;
 
 public:
@@ -30,15 +27,13 @@ public:
 	AAoeWeapon();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
+	virtual void PostInitializeComponents() override;
+	UFUNCTION(BlueprintCallable)
 	void OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 						   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 						   const FHitResult& SweepResult);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnEnemyExitRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 						  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
