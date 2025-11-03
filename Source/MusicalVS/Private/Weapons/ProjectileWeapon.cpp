@@ -4,6 +4,9 @@
 #include "Weapons/ProjectileWeapon.h"
 #include "Engine/OverlapResult.h"
 #include "Enemy.h"
+#include "DataAssets/AttackData.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Weapons/Projectile.h"
 
 
 // Sets default values
@@ -17,7 +20,7 @@ AProjectileWeapon::AProjectileWeapon()
 void AProjectileWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SearchRadius = WeaponData->BaseRange;
 }
 
 void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
@@ -34,6 +37,10 @@ void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 	Item->SetActorLocation(SpawnLoc);
 	FRotator SpawnRot = Dir.Rotation();
 	Item->SetActorRotation(SpawnRot);
+	AProjectile* Projectile = Cast<AProjectile>(Item);
+	if (!Projectile) return;
+	Projectile->InitProjectile(WeaponData->BaseEffectTime, {1000, 0, 0}, WeaponData->BaseDamage);
+	
 }
 
 // Called every frame
@@ -46,7 +53,6 @@ void AProjectileWeapon::Attack_Implementation()
 {
 	Super::Attack_Implementation();
 	const FVector PlayerLoc = GetActorLocation();
-	constexpr float SearchRadius = 1000.f;
 
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(SearchRadius);
@@ -70,11 +76,16 @@ void AProjectileWeapon::Attack_Implementation()
 	for (auto& Overlap : Overlaps)
 	{
 		AActor* Other = Overlap.GetActor();
+		// UE_LOG(LogTemp, Warning, TEXT("Other is: %s, Class: %s"), 
+		// 	*Other->GetName(), 
+		// 	*Other->GetClass()->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), *Other->GetName());
 		if (!Other || Other == this)
 			continue;
 
 		if (AEnemy* Enemy = Cast<AEnemy>(Other))
 		{
+			// AEnemy* Enemy = Cast<AEnemy>(Other);
 			float DistSq = FVector::DistSquared(PlayerLoc, Enemy->GetActorLocation());
 			// UE_LOG(LogTemp, Log, TEXT("Found enemy: %s | Distance: %.1f"), *Enemy->GetName(), FMath::Sqrt(DistSq));
 

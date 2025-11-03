@@ -3,7 +3,10 @@
 
 #include "PoolManager.h"
 
+#include <string>
+
 #include "PoolItem.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 APoolManager::APoolManager()
@@ -25,7 +28,9 @@ APoolItem* APoolManager::GetNewItem()
 		Item = GetWorld()->SpawnActor<APoolItem>(ActorToSpawn, FTransform::Identity);
 		Item->Init(this);
 	}
+	
 	Item->SetEnable(true);
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%d %s"), CurrentFreeItemsCount, *Item->GetName()), true, true, FColor::Red, 1);
 	return Item;
 }
 

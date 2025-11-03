@@ -18,14 +18,11 @@ public:
 	// Sets default values for this actor's properties
 	APoolItem();
 	virtual void Tick(float DeltaTime) override;
-	virtual void Init(APoolManager* PoolManager);
+	UFUNCTION(BlueprintNativeEvent)
+	void Init(APoolManager* PoolManager);
 
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void FreeItem()
-	{
-		Initialized = false;
-		ParentPoolManager->FreeItem(this);
-	}
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void FreeItem();
 
 	void SetEnable(bool Enable);
 protected:

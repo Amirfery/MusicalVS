@@ -11,15 +11,26 @@ APoolItem::APoolItem()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void APoolItem::FreeItem_Implementation()
+{
+	Initialized = false;
+	ParentPoolManager->FreeItem(this);
+}
+
 void APoolItem::SetEnable(bool Enable)
 {
 	if (Enable)
 	{
+		Cast<UPrimitiveComponent>(GetRootComponent())->SetGenerateOverlapEvents(true);
+		Cast<UPrimitiveComponent>(GetRootComponent())->UpdateOverlaps();
 		SetActorHiddenInGame(false);
 		SetActorEnableCollision(true);
 		SetActorTickEnabled(true);
 	} else
 	{
+		Cast<UPrimitiveComponent>(GetRootComponent())->SetGenerateOverlapEvents(false);
+		Cast<UPrimitiveComponent>(GetRootComponent())->UpdateOverlaps();
+		SetActorLocation(ParentPoolManager->GetActorLocation());
 		SetActorHiddenInGame(true);
 		SetActorEnableCollision(false);
 		SetActorTickEnabled(false);
@@ -39,9 +50,8 @@ void APoolItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void APoolItem::Init(APoolManager* PoolManager)
+void APoolItem::Init_Implementation(APoolManager* PoolManager)
 {
 	ParentPoolManager = PoolManager;
 	Initialized = true;
 }
-

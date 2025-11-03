@@ -15,7 +15,7 @@ class MUSICALVS_API AEnemy : public APoolItem
 public:
 	// Sets default values for this actor's properties
 	AEnemy();
-	virtual void Init(APoolManager* PoolManager) override;
+	virtual void Init_Implementation(APoolManager* PoolManager) override;
 	virtual void Tick(float DeltaTime) override;
 
 protected:

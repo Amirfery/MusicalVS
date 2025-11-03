@@ -14,9 +14,9 @@ AEnemy::AEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AEnemy::Init(APoolManager* PoolManager)
+void AEnemy::Init_Implementation(APoolManager* PoolManager)
 {
-	Super::Init(PoolManager);
+	Super::Init_Implementation(PoolManager);
 	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 

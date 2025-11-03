@@ -55,6 +55,8 @@ void AAoeWeapon::Attack_Implementation()
 	Super::Attack_Implementation();
 	for (AActor* Enemy : EnemiesInRange)
 	{
+		if (!IsValid(Enemy))
+			continue;
 		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(Enemy->GetRootComponent()))
 		{
 			FVector Dir = (Enemy->GetActorLocation() - GetActorLocation()).GetSafeNormal();

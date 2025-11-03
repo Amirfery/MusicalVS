@@ -13,6 +13,10 @@ class MUSICALVS_API AProjectileWeapon : public AWeapnSystem
 {
 	GENERATED_BODY()
 
+private:
+	UPROPERTY(EditDefaultsOnly)
+	float SearchRadius;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
 	APoolManager* ProjectilePoolManager;
