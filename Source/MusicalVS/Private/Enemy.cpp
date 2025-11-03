@@ -3,6 +3,7 @@
 
 #include "Enemy.h"
 
+#include "PoolSystem.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -35,5 +36,12 @@ void AEnemy::Tick(float DeltaTime)
 		return;
 	FVector Direction = (PlayerCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	AddActorWorldOffset(Speed * Direction * DeltaTime);
+}
+
+void AEnemy::Die()
+{
+	APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
+	// FreeItem();
+	Destroy();
 }
 

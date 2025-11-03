@@ -23,6 +23,14 @@ private:
 	FTimerHandle AutoAttackTimer;
 
 public:
+	UPROPERTY(BlueprintReadWrite)
+	int32 XP;
+	UPROPERTY(BlueprintReadWrite)
+	int32 Level;
+	UPROPERTY(BlueprintReadWrite)
+	int32 NeededXpToLevelUp;
+
+public:
 	// Sets default values for this character's properties
 	ACharacterSystem();
 
@@ -39,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static ACharacterSystem* GetCharacterInstance() {return Instance;}
+
+	UFUNCTION(BlueprintCallable)
+	void AddXP(int32 Amount);
 
 private:
 	UFUNCTION(BlueprintCallable)

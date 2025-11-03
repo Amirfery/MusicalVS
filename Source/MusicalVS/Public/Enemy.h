@@ -17,6 +17,8 @@ public:
 	AEnemy();
 	virtual void Init_Implementation(APoolManager* PoolManager) override;
 	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable)
+	void Die();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,5 +28,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Speed;
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ACharacter> PlayerCharacter;	
+	TObjectPtr<ACharacter> PlayerCharacter;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FName XpPoolSystemName;
+	
 };

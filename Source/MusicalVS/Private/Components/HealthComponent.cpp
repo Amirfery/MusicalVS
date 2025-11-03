@@ -1,5 +1,7 @@
 #include "Components/HealthComponent.h"
 
+#include "Enemy.h"
+
 
 UHealthComponent::UHealthComponent()
 {
@@ -24,7 +26,12 @@ void UHealthComponent::DecreaseHealth(const float Amount)
 
 	OnHealthChanged.Broadcast(CurrentHealth, MaxHealth, HealthDelta);
 	if (CurrentHealth <= 0)
-		GetOwner()->Destroy();
+	{
+		if (auto Enemy = Cast<AEnemy>(GetOwner()))
+		{
+			Enemy->Die();	
+		}
+	}
 }
 
 void UHealthComponent::IncreaseHealth(const float Amount)

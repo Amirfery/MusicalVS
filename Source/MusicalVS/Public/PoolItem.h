@@ -15,7 +15,6 @@ class MUSICALVS_API APoolItem : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	APoolItem();
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintNativeEvent)
@@ -26,7 +25,6 @@ public:
 
 	void SetEnable(bool Enable);
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:

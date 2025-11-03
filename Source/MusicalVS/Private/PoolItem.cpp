@@ -21,15 +21,11 @@ void APoolItem::SetEnable(bool Enable)
 {
 	if (Enable)
 	{
-		Cast<UPrimitiveComponent>(GetRootComponent())->SetGenerateOverlapEvents(true);
-		Cast<UPrimitiveComponent>(GetRootComponent())->UpdateOverlaps();
 		SetActorHiddenInGame(false);
 		SetActorEnableCollision(true);
 		SetActorTickEnabled(true);
 	} else
 	{
-		Cast<UPrimitiveComponent>(GetRootComponent())->SetGenerateOverlapEvents(false);
-		Cast<UPrimitiveComponent>(GetRootComponent())->UpdateOverlaps();
 		SetActorLocation(ParentPoolManager->GetActorLocation());
 		SetActorHiddenInGame(true);
 		SetActorEnableCollision(false);

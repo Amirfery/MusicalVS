@@ -4,6 +4,7 @@
 #include "Weapons/ProjectileWeapon.h"
 #include "Engine/OverlapResult.h"
 #include "Enemy.h"
+#include "PoolSystem.h"
 #include "DataAssets/AttackData.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Weapons/Projectile.h"
@@ -25,9 +26,9 @@ void AProjectileWeapon::BeginPlay()
 
 void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 {
-	if (!ProjectilePoolManager || !TargetEnemy) return;
+	if (!APoolSystem::GetInstance()->PoolInstances[PoolId] || !TargetEnemy) return;
 
-	APoolItem* Item = ProjectilePoolManager->GetNewItem();
+	APoolItem* Item = APoolSystem::GetInstance()->PoolInstances[PoolId]->GetNewItem();
 	if (!Item) return;
 
 	FVector SpawnLoc = GetActorLocation() + FVector(0, 0, 50.f);

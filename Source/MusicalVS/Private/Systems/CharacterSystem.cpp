@@ -3,7 +3,7 @@
 
 #include "Systems/CharacterSystem.h"
 #include "Engine/World.h"
-#include "Engine/EngineTypes.h" 
+#include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Character.h"
 
@@ -21,6 +21,9 @@ ACharacterSystem::ACharacterSystem()
 void ACharacterSystem::BeginPlay()
 {
 	Super::BeginPlay();
+	Level = 0;
+	NeededXpToLevelUp = 10;
+	XP = 0;
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, [this, ]&ACharacterSystem::AoeAttack, 0.5f, true);
 }
@@ -37,8 +40,28 @@ void ACharacterSystem::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ACharacterSystem::Init()
+void ACharacterSystem::AddXP(int32 Amount)
 {
-	
+	XP += Amount;
+	while (XP >= NeededXpToLevelUp)
+	{
+		XP -= NeededXpToLevelUp;
+		Level++;
+		if (Level < 21)
+		{
+			NeededXpToLevelUp = Level * 10;
+		}
+		else if (Level > 20 && Level < 41)
+		{
+			NeededXpToLevelUp = 600 + Level * 13;
+		}
+		else if (Level > 40)
+		{
+			NeededXpToLevelUp = 2400 + Level * 16;
+		}
+	}
 }
 
+void ACharacterSystem::Init()
+{
+}

@@ -18,8 +18,8 @@ private:
 	float SearchRadius;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
-	APoolManager* ProjectilePoolManager;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName PoolId;
 
 	virtual void BeginPlay() override;
 
