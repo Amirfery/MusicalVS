@@ -21,10 +21,17 @@ void AAoeWeapon::PostInitializeComponents()
 		return;
 	Radius = WeaponData->BaseRange;
 	Damage = WeaponData->BaseDamage;
+	EffectTime = WeaponData->BaseEffectTime;
+}
+
+void AAoeWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+	FmodAudioComp->SetParameter(FName(TEXT("Drums Level")), 0);
 }
 
 void AAoeWeapon::OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->IsA(ACharacterSystem::StaticClass()))
 		return;
@@ -50,6 +57,18 @@ void AAoeWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AAoeWeapon::Upgrade_Implementation()
+{
+	Super::Upgrade_Implementation();
+	FAttackLevelStruct LevelUp = WeaponData->LevelUps[Level];
+	Damage = Damage + (Damage * LevelUp.DamageUp);
+	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
+	Radius =Radius + (Radius * LevelUp.RangeUp);
+	Level += 1;
+	// FmodAudioComp->ParameterCache.Add(FName(TEXT("Drums Level")), Level);
+	FmodAudioComp->SetParameter(FName(TEXT("Drums Level")), Level);
+}
+
 void AAoeWeapon::Attack_Implementation()
 {
 	Super::Attack_Implementation();
@@ -62,7 +81,7 @@ void AAoeWeapon::Attack_Implementation()
 			FVector Dir = (Enemy->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 			Dir.Z = 0.f;
 			Dir.Normalize();
-			Prim->AddImpulse(Dir * WeaponData->BaseEffectTime, NAME_None, true);
+			Prim->AddImpulse(Dir * EffectTime, NAME_None, true);
 		}
 		if (UHealthComponent* HealthComponent = Enemy->GetComponentByClass<UHealthComponent>())
 		{

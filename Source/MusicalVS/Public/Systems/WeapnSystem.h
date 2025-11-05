@@ -8,6 +8,7 @@
 #include "FMODBlueprintStatics.h"
 #include "WeapnSystem.generated.h"
 
+struct FAttackLevelStruct;
 class UAttackData;
 class ACharacterSystem;
 
@@ -16,17 +17,17 @@ class MUSICALVS_API AWeapnSystem : public AActor
 {
 	GENERATED_BODY()
 
-private:
+protected:
 	UPROPERTY(EditAnywhere)
 	ACharacterSystem* Character;
 
 	UPROPERTY(VisibleAnywhere, Category = "Audio")
 	UFMODAudioComponent* FmodAudioComp;
-	
-	UPROPERTY(EditDefaultsOnly)
-	int32 Level = 0;
 
 public:
+	UPROPERTY(EditDefaultsOnly)
+	int32 Level = 0;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UAttackData> WeaponData;
 
@@ -45,6 +46,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Upgrade();
+
 	UFUNCTION(BlueprintNativeEvent)
 	void Attack();
+
+	void SetPaused(bool Paused) const;
 };

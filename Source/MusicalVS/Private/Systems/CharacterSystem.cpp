@@ -5,7 +5,9 @@
 #include "Engine/World.h"
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
+#include "DataAssets/AttackData.h"
 #include "GameFramework/Character.h"
+#include "Systems/WeapnSystem.h"
 
 ACharacterSystem* ACharacterSystem::Instance = nullptr;
 
@@ -40,6 +42,11 @@ void ACharacterSystem::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
+{
+	Weapons.Add(Weapon);
+}
+
 void ACharacterSystem::AddXP(int32 Amount)
 {
 	XP += Amount;
@@ -47,6 +54,11 @@ void ACharacterSystem::AddXP(int32 Amount)
 	{
 		XP -= NeededXpToLevelUp;
 		Level++;
+		// for (AWeapnSystem* Weapon : Weapons)
+		// {
+		// 	Weapon->Upgrade_Implementation();
+		// }
+		OnLevelUp.Broadcast();
 		if (Level < 21)
 		{
 			NeededXpToLevelUp = Level * 10;
@@ -59,6 +71,27 @@ void ACharacterSystem::AddXP(int32 Amount)
 		{
 			NeededXpToLevelUp = 2400 + Level * 16;
 		}
+	}
+}
+
+TArray<FAttackLevelStruct> ACharacterSystem::GetWeaponUpgrades()
+{
+	TArray<FAttackLevelStruct> LevelUps;
+	for (AWeapnSystem* Weapon : Weapons)
+	{
+		if (Weapon->Level < Weapon->WeaponData->LevelUps.Num())
+			LevelUps.Add(Weapon->WeaponData->LevelUps[Weapon->Level]);
+	}
+	if (LevelUps.Num() > 0)
+		SetPaused(true);
+	return LevelUps;
+}
+
+void ACharacterSystem::SetPaused(bool Paused)
+{
+	for (AWeapnSystem* Weapon : Weapons)
+	{
+		Weapon->SetPaused(Paused);
 	}
 }
 

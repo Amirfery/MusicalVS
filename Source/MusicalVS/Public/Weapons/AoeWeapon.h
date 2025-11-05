@@ -22,12 +22,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Damage;
 
+	float EffectTime;
+
 public:
 	// Sets default values for this actor's properties
 	AAoeWeapon();
 
 protected:
 	virtual void PostInitializeComponents() override;
+
+	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintCallable)
 	void OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 						   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
@@ -40,6 +44,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void Upgrade_Implementation() override;
 
 	virtual void Attack_Implementation() override;
 };

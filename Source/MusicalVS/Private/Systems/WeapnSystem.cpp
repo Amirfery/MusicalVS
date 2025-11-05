@@ -53,6 +53,15 @@ void AWeapnSystem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AWeapnSystem::SetPaused(bool Paused) const
+{
+	FmodAudioComp->SetPaused(Paused);
+}
+
+void AWeapnSystem::Upgrade_Implementation()
+{
+}
+
 void AWeapnSystem::Attack_Implementation()
 {
 }

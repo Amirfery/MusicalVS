@@ -17,6 +17,10 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float SearchRadius;
 
+	float Damage;
+
+	float EffectTime;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName PoolId;
@@ -32,6 +36,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void Upgrade_Implementation() override;
+	
 	virtual void Attack_Implementation() override;
 };
 

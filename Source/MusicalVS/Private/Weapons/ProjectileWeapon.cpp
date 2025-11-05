@@ -22,6 +22,10 @@ void AProjectileWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	SearchRadius = WeaponData->BaseRange;
+	Damage = WeaponData->BaseDamage;
+	EffectTime = WeaponData->BaseEffectTime;
+
+	FmodAudioComp->SetParameter(FName(TEXT("Piano Arp Level")), 0);
 }
 
 void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
@@ -40,7 +44,7 @@ void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 	Item->SetActorRotation(SpawnRot);
 	AProjectile* Projectile = Cast<AProjectile>(Item);
 	if (!Projectile) return;
-	Projectile->InitProjectile(WeaponData->BaseEffectTime, {1000, 0, 0}, WeaponData->BaseDamage);
+	Projectile->InitProjectile(EffectTime, {1000, 0, 0}, Damage);
 	
 }
 
@@ -48,6 +52,18 @@ void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 void AProjectileWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AProjectileWeapon::Upgrade_Implementation()
+{
+	Super::Upgrade_Implementation();
+	FAttackLevelStruct LevelUp = WeaponData->LevelUps[Level];
+	Damage = Damage + (Damage * LevelUp.DamageUp);
+	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
+	SearchRadius =SearchRadius + (SearchRadius * LevelUp.RangeUp);
+	Level += 1;
+	FmodAudioComp->SetParameter(FName(TEXT("Piano Arp Level")), Level);
+	// FmodAudioComp->ParameterCache.Add(FName(TEXT("Piano Arp Level")), Level);
 }
 
 void AProjectileWeapon::Attack_Implementation()

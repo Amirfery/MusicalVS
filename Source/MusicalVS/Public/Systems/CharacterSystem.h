@@ -6,8 +6,11 @@
 #include "GameFramework/Character.h"
 #include "CharacterSystem.generated.h"
 
+struct FAttackLevelStruct;
 class AWeapnSystem;
 class APoolManager;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelUp);
 
 UCLASS()
 class MUSICALVS_API ACharacterSystem : public ACharacter
@@ -17,10 +20,13 @@ class MUSICALVS_API ACharacterSystem : public ACharacter
 private:
 	static ACharacterSystem* Instance;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	TArray<AWeapnSystem*> Weapons;
 
 	FTimerHandle AutoAttackTimer;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLevelUp OnLevelUp;
 
 public:
 	UPROPERTY(BlueprintReadWrite)
@@ -49,7 +55,16 @@ public:
 	static ACharacterSystem* GetCharacterInstance() {return Instance;}
 
 	UFUNCTION(BlueprintCallable)
+	void AddWeapon(AWeapnSystem* Weapon);
+
+	UFUNCTION(BlueprintCallable)
 	void AddXP(int32 Amount);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FAttackLevelStruct> GetWeaponUpgrades();
+
+	UFUNCTION(BlueprintCallable)
+	void SetPaused(bool Paused);
 
 private:
 	UFUNCTION(BlueprintCallable)
