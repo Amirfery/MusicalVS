@@ -14,7 +14,11 @@ APoolItem::APoolItem()
 void APoolItem::FreeItem_Implementation()
 {
 	Initialized = false;
-	ParentPoolManager->FreeItem(this);
+	if (ParentPoolManager)
+	{
+		ParentPoolManager->FreeItem(this);
+	}
+	
 }
 
 void APoolItem::SetEnable(bool Enable)

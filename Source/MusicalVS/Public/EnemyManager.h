@@ -28,7 +28,7 @@ public:
 
 public:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<APoolManager> EnemyPoolActor;
+	FName EnemyPoolId;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float InnerCircleRadius;

@@ -5,6 +5,7 @@
 
 #include "Enemy.h"
 #include "PoolManager.h"
+#include "PoolSystem.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -16,7 +17,7 @@ AEnemyManager::AEnemyManager()
 void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
-	EnemyPool = GetWorld()->SpawnActor<APoolManager>(EnemyPoolActor);
+	EnemyPool = APoolSystem::GetInstance()->PoolInstances[EnemyPoolId];
 }
 
 void AEnemyManager::Tick(float DeltaSeconds)
