@@ -3,6 +3,8 @@
 
 #include "PoolItem.h"
 
+#include "Compression/lz4.h"
+
 
 // Sets default values
 APoolItem::APoolItem()
@@ -35,6 +37,11 @@ void APoolItem::SetEnable(bool Enable)
 		SetActorEnableCollision(false);
 		SetActorTickEnabled(false);
 	}
+}
+
+void APoolItem::SetFloatValues_Implementation(const TArray<float>& FloatValues)
+{
+	return;
 }
 
 // Called when the game starts or when spawned

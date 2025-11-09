@@ -24,6 +24,10 @@ public:
 	void FreeItem();
 
 	void SetEnable(bool Enable);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetFloatValues(const TArray<float>& FloatValues);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,5 +37,4 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool Initialized;
-	
 };

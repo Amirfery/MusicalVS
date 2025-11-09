@@ -20,6 +20,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Die();
 
+	virtual void SetFloatValues_Implementation(const TArray<float>& FloatValues) override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -31,5 +33,7 @@ public:
 	TObjectPtr<ACharacter> PlayerCharacter;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName XpPoolSystemName;
-	
+
+	UPROPERTY(Transient)
+	float MaxDistance;
 };

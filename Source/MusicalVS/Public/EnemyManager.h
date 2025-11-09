@@ -7,6 +7,7 @@
 #include "EnemyManager.generated.h"
 
 
+class APoolItem;
 class AEnemy;
 class APoolManager;
 
@@ -25,6 +26,11 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void PostInitializeComponents() override;
+
+	void RelocateEnemy(APoolItem* Enemy) const;
+
+	void EnemyDied(APoolItem* Enemy);
 
 public:
 	UPROPERTY(EditDefaultsOnly)
@@ -42,8 +48,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float EnemySpawnInterval;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static AEnemyManager* GetInstance() {return Instance;}
+
 private:
 	bool bIsInCooldown;
 	FTimerHandle CooldownTimer;
+	UPROPERTY(Transient)
 	TObjectPtr<APoolManager> EnemyPool;
+
+	static TObjectPtr<AEnemyManager> Instance;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxDistance;
+
+	UPROPERTY(Transient)
+	int32 CurrentAliveEnemies;
 };

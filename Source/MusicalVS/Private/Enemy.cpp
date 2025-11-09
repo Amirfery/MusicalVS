@@ -3,9 +3,11 @@
 
 #include "Enemy.h"
 
+#include "EnemyManager.h"
 #include "PoolSystem.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Systems/CharacterSystem.h"
 
 
 // Sets default values
@@ -25,7 +27,6 @@ void AEnemy::Init_Implementation(APoolManager* PoolManager)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -34,14 +35,26 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (!Initialized)
 		return;
-	FVector Direction = (PlayerCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	AddActorWorldOffset(Speed * Direction * DeltaTime);
+	FVector DistanceVec = PlayerCharacter->GetActorLocation() - GetActorLocation();
+	float Distance = DistanceVec.Length();
+	if (Distance > MaxDistance)
+	{
+		AEnemyManager::GetInstance()->RelocateEnemy(this);
+	}
+	FVector Direction = (DistanceVec).GetSafeNormal();
+	// AddActorWorldOffset(Speed * Direction * DeltaTime);
 }
 
 void AEnemy::Die()
 {
 	APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
-	// FreeItem();
-	Destroy();
+	FreeItem();
+	AEnemyManager::GetInstance()->EnemyDied(this);
+}
+
+void AEnemy::SetFloatValues_Implementation(const TArray<float>& FloatValues)
+{
+	Super::SetFloatValues_Implementation(FloatValues);
+	MaxDistance = FloatValues[0];
 }
 
