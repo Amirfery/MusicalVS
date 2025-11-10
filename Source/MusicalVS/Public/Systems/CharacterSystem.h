@@ -11,6 +11,7 @@ class AWeapnSystem;
 class APoolManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelUp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneXPAdded, float, Amount);
 
 UCLASS()
 class MUSICALVS_API ACharacterSystem : public ACharacter
@@ -27,6 +28,9 @@ private:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLevelUp OnLevelUp;
+
+	UPROPERTY(BlueprintAssignable)
+	FOneXPAdded OnXPAdded;
 
 public:
 	UPROPERTY(BlueprintReadWrite)

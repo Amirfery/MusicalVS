@@ -50,6 +50,8 @@ void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 void ACharacterSystem::AddXP(int32 Amount)
 {
 	XP += Amount;
+	const float XpProgress = XP / NeededXpToLevelUp;
+	OnXPAdded.Broadcast(XpProgress);
 	while (XP >= NeededXpToLevelUp)
 	{
 		XP -= NeededXpToLevelUp;

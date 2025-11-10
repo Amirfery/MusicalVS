@@ -29,7 +29,7 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::InitProjectile(const float ProjectileLifeSpan, const FVector& ProjectileVelocity, const float ProjectileDamage)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), GetName(), true, false, FColor::Red, 1);
+	// UKismetSystemLibrary::PrintString(GetWorld(), GetName(), true, false, FColor::Red, 1);
 	LifeSpan = ProjectileLifeSpan;
 	Velocity = ProjectileVelocity;
 	Damage = ProjectileDamage;

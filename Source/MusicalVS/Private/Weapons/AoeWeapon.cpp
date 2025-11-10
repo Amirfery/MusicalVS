@@ -39,7 +39,7 @@ void AAoeWeapon::OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		EnemiesInRange.Add(OtherActor);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("%d"), EnemiesInRange.Num());
+	// UE_LOG(LogTemp, Warning, TEXT("%d"), EnemiesInRange.Num());
 }
 
 void AAoeWeapon::OnEnemyExitRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
