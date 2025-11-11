@@ -28,6 +28,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CollidedWithPlayer(ACharacterSystem* PlayerSystem);
 
+	UFUNCTION(BlueprintCallable)
+	void Collect(ACharacterSystem* Player);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 XpAmount;
+
+protected:
+	bool bIsMovingToPlayer;
+	float MoveSpeed;
+	float CollectDistance;
+
+	UPROPERTY()
+	TObjectPtr<ACharacterSystem> TargetPlayer;
+	
 };
