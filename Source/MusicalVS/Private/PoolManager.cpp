@@ -30,7 +30,6 @@ APoolItem* APoolManager::GetNewItem()
 	}
 	
 	Item->SetEnable(true);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%d %s"), CurrentFreeItemsCount, *Item->GetName()), true, true, FColor::Red, 1);
 	return Item;
 }
 
