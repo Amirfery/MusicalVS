@@ -20,6 +20,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Die();
 
+	void Freeze();
+	void Unfreeze();
+
 	virtual void SetFloatValues_Implementation(const TArray<float>& FloatValues) override;
 	
 protected:
@@ -33,6 +36,8 @@ public:
 	TObjectPtr<ACharacter> PlayerCharacter;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName XpPoolSystemName;
+
+	TObjectPtr<UMaterialInstanceDynamic> DynMat;
 
 	UPROPERTY(Transient)
 	float MaxDistance;

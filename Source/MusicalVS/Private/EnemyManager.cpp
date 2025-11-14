@@ -46,6 +46,14 @@ void AEnemyManager::Tick(float DeltaSeconds)
 		                                       bIsInCooldown = false;
 	                                       }), EnemySpawnInterval, false);
 	CurrentAliveEnemies++;
+	AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
+	if (bIsFreeze)
+	{
+		Enemy->Freeze();
+	}
+	else
+		Enemy->Unfreeze();
+	AliveEnemies.Add(Enemy);
 }
 
 void AEnemyManager::PostInitializeComponents()
@@ -63,7 +71,26 @@ void AEnemyManager::RelocateEnemy(APoolItem* Enemy) const
 		Player->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, 0.0f));
 }
 
-void AEnemyManager::EnemyDied(APoolItem* Enemy)
+void AEnemyManager::EnemyDied(AEnemy* Enemy)
 {
 	CurrentAliveEnemies--;
+	AliveEnemies.Remove(Enemy);
+}
+
+void AEnemyManager::FreezeEnemies()
+{
+	GetWorld()->GetTimerManager().ClearTimer(FreezeTimer);
+	for (AEnemy* Actor : AliveEnemies)
+	{
+		Actor->Freeze();
+	}
+	bIsFreeze = true;
+	GetWorld()->GetTimerManager().SetTimer(FreezeTimer, FTimerDelegate::CreateLambda([this]()
+	{
+		for (AEnemy* Actor : AliveEnemies)
+		{
+			Actor->Unfreeze();
+		}
+		bIsFreeze = false;
+	}), 3.f, false);
 }

@@ -27,6 +27,8 @@ void AEnemy::Init_Implementation(APoolManager* PoolManager)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	USkeletalMeshComponent* Mesh = GetComponentByClass<USkeletalMeshComponent>();
+	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 }
 
 // Called every frame
@@ -47,12 +49,30 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::Die()
 {
-	// APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
-	APoolItem* Item = APoolSystem::PoolSystemInstance->PoolInstances[FName("PowerUp")]->GetNewItem();
-	Item->SetFloatValues({1});
-	Item->SetActorLocation(GetActorLocation());
+	APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
+	
+	float RandomNum = FMath::RandRange(0.f, 100.f);
+	if (RandomNum < 20)
+	{
+		APoolItem* Item = APoolSystem::PoolSystemInstance->PoolInstances[FName("PowerUp")]->GetNewItem();
+		Item->SetFloatValues({static_cast<float>(FMath::RandRange(0, 1))});
+		Item->SetActorLocation(GetActorLocation());
+	}
+	
 	FreeItem();
 	AEnemyManager::GetInstance()->EnemyDied(this);
+}
+
+void AEnemy::Freeze()
+{
+	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(0,0,1));
+	SetActorTickEnabled(false);
+}
+
+void AEnemy::Unfreeze()
+{
+	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(1,1,1));
+	SetActorTickEnabled(true);
 }
 
 void AEnemy::SetFloatValues_Implementation(const TArray<float>& FloatValues)

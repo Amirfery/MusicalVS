@@ -7,6 +7,7 @@
 #include "EnemyManager.generated.h"
 
 
+class ACharacterSystem;
 class APoolItem;
 class AEnemy;
 class APoolManager;
@@ -30,7 +31,9 @@ public:
 
 	void RelocateEnemy(APoolItem* Enemy) const;
 
-	void EnemyDied(APoolItem* Enemy);
+	void EnemyDied(AEnemy* Enemy);
+
+	void FreezeEnemies();
 
 public:
 	UPROPERTY(EditDefaultsOnly)
@@ -64,4 +67,13 @@ private:
 
 	UPROPERTY(Transient)
 	int32 CurrentAliveEnemies;
+
+	UPROPERTY(Transient)
+	TSet<TObjectPtr<AEnemy>> AliveEnemies;
+
+	UPROPERTY(Transient)
+	bool bIsFreeze;
+
+	UPROPERTY(Transient)
+	FTimerHandle FreezeTimer;
 };

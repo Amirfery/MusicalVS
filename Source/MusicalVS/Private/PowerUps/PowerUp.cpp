@@ -4,6 +4,7 @@
 #include "PowerUps/PowerUp.h"
 
 #include "Enemy.h"
+#include "EnemyManager.h"
 #include "XpGem.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -60,13 +61,7 @@ void APowerUp::CollectGems(ACharacterSystem* PlayerSystem)
 
 void APowerUp::FreezeEnemies(ACharacterSystem* PlayerSystem)
 {
-	TArray<AActor*> FoundEnemies;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), FoundEnemies);
-
-	for (AActor* Actor : FoundEnemies)
-	{
-		Actor->SetActorTickEnabled(false);
-	}
+	AEnemyManager::GetInstance()->FreezeEnemies();
 	FreeItem();
 }
 
