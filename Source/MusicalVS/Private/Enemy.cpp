@@ -47,7 +47,10 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::Die()
 {
-	APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
+	// APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
+	APoolItem* Item = APoolSystem::PoolSystemInstance->PoolInstances[FName("PowerUp")]->GetNewItem();
+	Item->SetFloatValues({1});
+	Item->SetActorLocation(GetActorLocation());
 	FreeItem();
 	AEnemyManager::GetInstance()->EnemyDied(this);
 }

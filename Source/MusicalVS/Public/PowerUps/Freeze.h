@@ -1,0 +1,30 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "PoolItem.h"
+#include "Freeze.generated.h"
+
+class ACharacterSystem;
+
+UCLASS()
+class MUSICALVS_API AFreeze : public APoolItem
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this actor's properties
+	AFreeze();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+	void CollidedWithPlayer(ACharacterSystem* PlayerSystem);
+};
