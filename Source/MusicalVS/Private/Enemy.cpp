@@ -5,6 +5,7 @@
 
 #include "EnemyManager.h"
 #include "PoolSystem.h"
+#include "TickSubsystem.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Systems/CharacterSystem.h"
@@ -14,7 +15,7 @@
 AEnemy::AEnemy()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AEnemy::Init_Implementation(APoolManager* PoolManager)
@@ -29,6 +30,7 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 	USkeletalMeshComponent* Mesh = GetComponentByClass<USkeletalMeshComponent>();
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
+	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
 }
 
 // Called every frame
@@ -43,8 +45,6 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		AEnemyManager::GetInstance()->RelocateEnemy(this);
 	}
-	FVector Direction = (DistanceVec).GetSafeNormal();
-	// AddActorWorldOffset(Speed * Direction * DeltaTime);
 }
 
 void AEnemy::Die()
@@ -79,5 +79,10 @@ void AEnemy::SetFloatValues_Implementation(const TArray<float>& FloatValues)
 {
 	Super::SetFloatValues_Implementation(FloatValues);
 	MaxDistance = FloatValues[0];
+}
+
+void AEnemy::TickEnemy(float DeltaTime)
+{
+	Tick(DeltaTime);
 }
 

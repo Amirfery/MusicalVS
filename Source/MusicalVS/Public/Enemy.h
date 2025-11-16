@@ -26,6 +26,8 @@ public:
 	virtual void SetFloatValues_Implementation(const TArray<float>& FloatValues) override;
 	
 protected:
+	UFUNCTION()
+	void TickEnemy(float DeltaTime);
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
