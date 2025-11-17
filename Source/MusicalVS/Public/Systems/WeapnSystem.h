@@ -29,7 +29,10 @@ public:
 	int32 Level = 0;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<UAttackData> WeaponData;
+	TObjectPtr<UAttackData> AttackData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FName Id;
 
 public:
 	// Sets default values for this actor's properties

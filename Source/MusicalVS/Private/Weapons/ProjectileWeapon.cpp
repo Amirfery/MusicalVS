@@ -21,9 +21,9 @@ AProjectileWeapon::AProjectileWeapon()
 void AProjectileWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	SearchRadius = WeaponData->BaseRange;
-	Damage = WeaponData->BaseDamage;
-	EffectTime = WeaponData->BaseEffectTime;
+	SearchRadius = AttackData->BaseRange;
+	Damage = AttackData->BaseDamage;
+	EffectTime = AttackData->BaseEffectTime;
 
 	FmodAudioComp->SetParameter(FName(TEXT("Piano Arp Level")), 0);
 }
@@ -57,7 +57,7 @@ void AProjectileWeapon::Tick(float DeltaTime)
 void AProjectileWeapon::Upgrade_Implementation()
 {
 	Super::Upgrade_Implementation();
-	FAttackLevelStruct LevelUp = WeaponData->LevelUps[Level];
+	FAttackLevelStruct LevelUp = AttackData->LevelUps[Level];
 	Damage = Damage + (Damage * LevelUp.DamageUp);
 	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
 	SearchRadius =SearchRadius + (SearchRadius * LevelUp.RangeUp);

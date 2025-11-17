@@ -5,10 +5,14 @@
 #include "Engine/World.h"
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
+#include "GameManager.h"
+#include "K2Node_SpawnActorFromClass.h"
 #include "DataAssets/AttackData.h"
 #include "GameFramework/Character.h"
+#include "Infrastructure/GenericStructs.h"
 #include "Systems/WeapnSystem.h"
 
+class UGameManager;
 ACharacterSystem* ACharacterSystem::Instance = nullptr;
 
 // Sets default values
@@ -44,7 +48,7 @@ void ACharacterSystem::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 {
-	Weapons.Add(Weapon);
+	Weapons.Add(Weapon->Id, Weapon);
 }
 
 void ACharacterSystem::AddXP(int32 Amount)
@@ -76,24 +80,76 @@ void ACharacterSystem::AddXP(int32 Amount)
 	}
 }
 
-TArray<FAttackLevelStruct> ACharacterSystem::GetWeaponUpgrades()
+TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
 {
-	TArray<FAttackLevelStruct> LevelUps;
-	for (AWeapnSystem* Weapon : Weapons)
+	UGameManager* GM = GetGameInstance()->GetSubsystem<UGameManager>();
+
+	UDataTable* Table = GM->WeaponsDataTable;
+	
+	if (!Table)
+		return TArray<FWeaponToUpgrade>();
+	
+	TArray<FName> AllRows = Table->GetRowNames();
+	TArray<FName> ValidRows;
+	for (FName Row : AllRows)
 	{
-		if (Weapon->Level < Weapon->WeaponData->LevelUps.Num())
-			LevelUps.Add(Weapon->WeaponData->LevelUps[Weapon->Level]);
+		TObjectPtr<AWeapnSystem>* FoundPtr = Weapons.Find(Row);
+		if (!FoundPtr && Weapons.Num() < 2)
+			ValidRows.Add(Row);
+		if (FoundPtr)
+		{
+			AWeapnSystem* Weapon = *FoundPtr;
+			if (Weapon->AttackData->LevelUps.Num() > Weapon->Level)
+			{
+				ValidRows.Add(Row);
+			}
+		}
 	}
-	if (LevelUps.Num() > 0)
+	TArray<FName> RandomRows;
+
+	if (ValidRows.Num() > 3)
+	{
+		ValidRows.Sort([](const FName& A, const FName& B)
+		{
+			return FMath::RandRange(0,1) == 0;
+		});
+		RandomRows.Append(ValidRows.GetData(), 3);
+	}
+	else
+	{
+		RandomRows = ValidRows;
+	}
+
+	TArray<FWeaponToUpgrade> Upgrades;
+	for (FName RowName : RandomRows)
+	{
+		FWeapon* RowHandle = Table->FindRow<FWeapon>(RowName, TEXT("Get a row from weapon data table."));
+		Upgrades.Add(FWeaponToUpgrade(RowName, RowHandle->DisplayName, RowHandle->Description, RowHandle->Icon));
+	}
+	
+	if (Upgrades.Num() > 0)
 		SetPaused(true);
-	return LevelUps;
+
+	return Upgrades;
 }
 
 void ACharacterSystem::SetPaused(bool Paused)
 {
-	for (AWeapnSystem* Weapon : Weapons)
+	for (const TPair<FName, TObjectPtr<AWeapnSystem>>& Weapon : Weapons)
 	{
-		Weapon->SetPaused(Paused);
+		Weapon.Value->SetPaused(Paused);
+	}
+}
+
+void ACharacterSystem::UpgradeWeapon(FName Id)
+{
+	for (const TPair<FName, TObjectPtr<AWeapnSystem>>& Weapon : Weapons)
+	{
+		if (Id == Weapon.Value->Id)
+		{
+			Weapon.Value->Upgrade();
+			return;
+		}
 	}
 }
 

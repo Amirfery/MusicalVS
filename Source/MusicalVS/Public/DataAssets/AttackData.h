@@ -12,6 +12,7 @@ USTRUCT(BlueprintType)
 struct FAttackLevelStruct
 {
 	GENERATED_BODY()
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(UIMin = 0, UIMax = 100, ClampMin = 0, ClampMax = 1))
 	float DamageUp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(UIMin = 0, UIMax = 100, ClampMin = 0, ClampMax = 1))

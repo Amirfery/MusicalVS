@@ -17,11 +17,11 @@ AAoeWeapon::AAoeWeapon()
 void AAoeWeapon::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if (!IsValid(WeaponData))
+	if (!IsValid(AttackData))
 		return;
-	Radius = WeaponData->BaseRange;
-	Damage = WeaponData->BaseDamage;
-	EffectTime = WeaponData->BaseEffectTime;
+	Radius = AttackData->BaseRange;
+	Damage = AttackData->BaseDamage;
+	EffectTime = AttackData->BaseEffectTime;
 }
 
 void AAoeWeapon::BeginPlay()
@@ -60,7 +60,7 @@ void AAoeWeapon::Tick(float DeltaTime)
 void AAoeWeapon::Upgrade_Implementation()
 {
 	Super::Upgrade_Implementation();
-	FAttackLevelStruct LevelUp = WeaponData->LevelUps[Level];
+	FAttackLevelStruct LevelUp = AttackData->LevelUps[Level];
 	Damage = Damage + (Damage * LevelUp.DamageUp);
 	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
 	Radius =Radius + (Radius * LevelUp.RangeUp);

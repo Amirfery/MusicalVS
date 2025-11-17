@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CharacterSystem.generated.h"
 
-struct FAttackLevelStruct;
+struct FWeaponToUpgrade;
 class AWeapnSystem;
 class APoolManager;
 
@@ -22,7 +22,7 @@ private:
 	static ACharacterSystem* Instance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
-	TArray<AWeapnSystem*> Weapons;
+	TMap<FName, TObjectPtr<AWeapnSystem>> Weapons;
 
 	FTimerHandle AutoAttackTimer;
 
@@ -65,10 +65,13 @@ public:
 	void AddXP(int32 Amount);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<FAttackLevelStruct> GetWeaponUpgrades();
+	TArray<FWeaponToUpgrade> GetWeaponUpgrades();
 
 	UFUNCTION(BlueprintCallable)
 	void SetPaused(bool Paused);
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeWeapon(FName Id);
 
 private:
 	UFUNCTION(BlueprintCallable)

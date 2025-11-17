@@ -29,7 +29,7 @@ void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 	// {
 	// 	
 	// }
-	FString Marker = WeaponData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level);
+	FString Marker = AttackData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level);
 	if (Name.Contains(Marker, ESearchCase::IgnoreCase))
 	{
 		Attack();
@@ -42,7 +42,7 @@ void AWeapnSystem::BeginPlay()
 	Super::BeginPlay();
 	Character = ACharacterSystem::GetCharacterInstance() ? ACharacterSystem::GetCharacterInstance() : nullptr;
 
-	FmodAudioComp->SetEvent(WeaponData->SoundEvent);
+	FmodAudioComp->SetEvent(AttackData->SoundEvent);
 	FmodAudioComp->OnTimelineMarker.AddDynamic(this, &AWeapnSystem::OnTimelineMarker);
 	FmodAudioComp->Play();
 }
