@@ -76,4 +76,6 @@ public:
 private:
 	UFUNCTION(BlueprintCallable)
 	void Init();
+
+	TObjectPtr<AWeapnSystem> MainWeapon;
 };

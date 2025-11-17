@@ -10,6 +10,7 @@
 #include "DataAssets/AttackData.h"
 #include "GameFramework/Character.h"
 #include "Infrastructure/GenericStructs.h"
+#include "Math/UnitConversion.h"
 #include "Systems/WeapnSystem.h"
 
 class UGameManager;
@@ -48,6 +49,11 @@ void ACharacterSystem::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 {
+	if (Weapons.IsEmpty())
+		MainWeapon = Weapon;
+	else
+		Weapon->SetEventPercentage(MainWeapon->GetEventPercentage());
+	
 	Weapons.Add(Weapon->Id, Weapon);
 }
 

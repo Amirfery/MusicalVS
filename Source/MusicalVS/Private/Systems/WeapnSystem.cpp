@@ -6,6 +6,7 @@
 #include <string>
 
 #include "DataAssets/AttackData.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
 
 
@@ -53,9 +54,19 @@ void AWeapnSystem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+float AWeapnSystem::GetEventPercentage()
+{
+	return static_cast<float>(FmodAudioComp->GetTimelinePosition()) / FmodAudioComp->GetLength(); 
+}
+
 void AWeapnSystem::SetPaused(bool Paused) const
 {
 	FmodAudioComp->SetPaused(Paused);
+}
+
+void AWeapnSystem::SetEventPercentage(float Percentage)
+{
+	FmodAudioComp->SetTimelinePosition(FmodAudioComp->GetLength() * Percentage);
 }
 
 void AWeapnSystem::Upgrade_Implementation()

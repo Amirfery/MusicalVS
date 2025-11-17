@@ -55,5 +55,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void Attack();
 
+	float GetEventPercentage();
+
 	void SetPaused(bool Paused) const;
+	void SetEventPercentage(float Percentage);
 };
