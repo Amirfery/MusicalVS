@@ -6,6 +6,7 @@
 void UTickSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+	bEnemyCanTick = true;
 }
 
 void UTickSubsystem::Deinitialize()
@@ -15,5 +16,6 @@ void UTickSubsystem::Deinitialize()
 
 void UTickSubsystem::Tick(float DeltaTime)
 {
-	EnemyTickDelegate.Broadcast(DeltaTime);
+	if (bEnemyCanTick)
+		EnemyTickDelegate.Broadcast(DeltaTime);
 }

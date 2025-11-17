@@ -93,17 +93,13 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
 	TArray<FName> ValidRows;
 	for (FName Row : AllRows)
 	{
-		TObjectPtr<AWeapnSystem>* FoundPtr = Weapons.Find(Row);
-		if (!FoundPtr && Weapons.Num() < 2)
-			ValidRows.Add(Row);
-		if (FoundPtr)
+		if (Weapons.Contains(Row))
 		{
-			AWeapnSystem* Weapon = *FoundPtr;
-			if (Weapon->AttackData->LevelUps.Num() > Weapon->Level)
-			{
+			if (Weapons[Row]->AttackData->LevelUps.Num() > Weapons[Row]->Level)
 				ValidRows.Add(Row);
-			}
 		}
+		else if (Weapons.Num() < 2)
+			ValidRows.Add(Row);
 	}
 	TArray<FName> RandomRows;
 
@@ -143,13 +139,9 @@ void ACharacterSystem::SetPaused(bool Paused)
 
 void ACharacterSystem::UpgradeWeapon(FName Id)
 {
-	for (const TPair<FName, TObjectPtr<AWeapnSystem>>& Weapon : Weapons)
+	if (Weapons.Contains(Id))
 	{
-		if (Id == Weapon.Value->Id)
-		{
-			Weapon.Value->Upgrade();
-			return;
-		}
+		Weapons[Id]->Upgrade();
 	}
 }
 

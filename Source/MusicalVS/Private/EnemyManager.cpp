@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "PoolManager.h"
 #include "PoolSystem.h"
+#include "TickSubsystem.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Systems/CharacterSystem.h"
@@ -80,6 +81,7 @@ void AEnemyManager::EnemyDied(AEnemy* Enemy)
 void AEnemyManager::FreezeEnemies()
 {
 	GetWorld()->GetTimerManager().ClearTimer(FreezeTimer);
+	GetWorld()->GetSubsystem<UTickSubsystem>()->bEnemyCanTick = false;
 	for (AEnemy* Actor : AliveEnemies)
 	{
 		Actor->Freeze();
@@ -91,6 +93,7 @@ void AEnemyManager::FreezeEnemies()
 		{
 			Actor->Unfreeze();
 		}
+		GetWorld()->GetSubsystem<UTickSubsystem>()->bEnemyCanTick = true;
 		bIsFreeze = false;
 	}), 3.f, false);
 }

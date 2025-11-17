@@ -25,6 +25,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTickSubsystemDelegate, float, DeltaTime);
 	UPROPERTY(BlueprintReadOnly)
 	FTickSubsystemDelegate EnemyTickDelegate;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bEnemyCanTick;
 	
 	
 };

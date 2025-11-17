@@ -15,7 +15,7 @@
 AEnemy::AEnemy()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	
 }
 
 void AEnemy::Init_Implementation(APoolManager* PoolManager)
@@ -31,6 +31,15 @@ void AEnemy::BeginPlay()
 	USkeletalMeshComponent* Mesh = GetComponentByClass<USkeletalMeshComponent>();
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
+	
+}
+
+void AEnemy::PostLoad()
+{
+	Super::PostLoad();
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	SetActorTickEnabled(false); 
 }
 
 // Called every frame
@@ -66,13 +75,11 @@ void AEnemy::Die()
 void AEnemy::Freeze()
 {
 	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(0,0,1));
-	SetActorTickEnabled(false);
 }
 
 void AEnemy::Unfreeze()
 {
 	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(1,1,1));
-	SetActorTickEnabled(true);
 }
 
 void AEnemy::SetFloatValues_Implementation(const TArray<float>& FloatValues)
