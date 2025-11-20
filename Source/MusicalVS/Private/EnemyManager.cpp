@@ -32,14 +32,9 @@ void AEnemyManager::Tick(float DeltaSeconds)
 		return;
 	if (bIsInCooldown)
 		return;
-	ACharacter* Player = ACharacterSystem::GetCharacterInstance();
-	
-	float Radius = FMath::Sqrt(FMath::RandRange(FMath::Pow(InnerCircleRadius, 2), FMath::Pow(OuterCircleRadius, 2)));
-	float Angle = FMath::RandRange(0.0f, 2 * PI);
 	APoolItem* TempEnemy = EnemyPool->GetNewItem();
 	TempEnemy->SetFloatValues({MaxDistance});
-	TempEnemy->SetActorLocation(
-		Player->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, 160.0f));
+	RelocateEnemy(TempEnemy);
 	bIsInCooldown = true;
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimer,
 	                                       FTimerDelegate::CreateLambda([this]()
@@ -65,11 +60,14 @@ void AEnemyManager::PostInitializeComponents()
 
 void AEnemyManager::RelocateEnemy(APoolItem* Enemy) const
 {
+	FVector BoxExtent{};
+	FVector BoxCenter{};
+	Enemy->GetActorBounds(true, BoxCenter, BoxExtent);
 	float Radius = FMath::Sqrt(FMath::RandRange(FMath::Pow(InnerCircleRadius, 2), FMath::Pow(OuterCircleRadius, 2)));
 	float Angle = FMath::RandRange(0.0f, 2 * PI);
 	ACharacter* Player = ACharacterSystem::GetCharacterInstance();
 	Enemy->SetActorLocation(
-		Player->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, 0.0f));
+		Player->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, BoxExtent.Z));
 }
 
 void AEnemyManager::EnemyDied(AEnemy* Enemy)

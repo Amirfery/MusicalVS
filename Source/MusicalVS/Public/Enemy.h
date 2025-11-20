@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
+class UCapsuleComponent;
+
 UCLASS()
 class MUSICALVS_API AEnemy : public APoolItem
 {
@@ -40,7 +42,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName XpPoolSystemName;
 
+	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> DynMat;
+
+	UPROPERTY(Transient)
+	TObjectPtr<USkeletalMeshComponent> Mesh;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<UCapsuleComponent> CapsuleComponent;
 
 	UPROPERTY(Transient)
 	float MaxDistance;

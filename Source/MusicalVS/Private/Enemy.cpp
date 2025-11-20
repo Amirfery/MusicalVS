@@ -6,6 +6,7 @@
 #include "EnemyManager.h"
 #include "PoolSystem.h"
 #include "TickSubsystem.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Systems/CharacterSystem.h"
@@ -28,7 +29,8 @@ void AEnemy::Init_Implementation(APoolManager* PoolManager)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	USkeletalMeshComponent* Mesh = GetComponentByClass<USkeletalMeshComponent>();
+	Mesh = GetComponentByClass<USkeletalMeshComponent>();
+	CapsuleComponent = GetComponentByClass<UCapsuleComponent>();
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
 	
@@ -74,11 +76,14 @@ void AEnemy::Die()
 
 void AEnemy::Freeze()
 {
+	CapsuleComponent->SetPhysicsLinearVelocity(FVector(0, 0, 0));
+	Mesh->Stop();
 	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(0,0,1));
 }
 
 void AEnemy::Unfreeze()
 {
+	Mesh->Play(true);
 	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(1,1,1));
 }
 
