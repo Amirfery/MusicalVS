@@ -51,10 +51,12 @@ void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 {
 	if (Weapons.IsEmpty())
 		MainWeapon = Weapon;
-	else
-		Weapon->SetEventPercentage(MainWeapon->GetEventPercentage());
 	
 	Weapons.Add(Weapon->Id, Weapon);
+	for (auto Temp : Weapons)
+	{
+		Temp.Value->SetEventPercentage(0);
+	}
 }
 
 void ACharacterSystem::AddXP(int32 Amount)

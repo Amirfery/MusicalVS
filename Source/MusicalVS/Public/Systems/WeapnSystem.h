@@ -34,6 +34,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FName Id;
 
+	bool bShouldSync;
 public:
 	// Sets default values for this actor's properties
 	AWeapnSystem();

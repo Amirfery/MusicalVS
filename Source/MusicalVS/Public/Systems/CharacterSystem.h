@@ -40,6 +40,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 NeededXpToLevelUp;
 
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AWeapnSystem> MainWeapon;
+
 public:
 	// Sets default values for this character's properties
 	ACharacterSystem();
@@ -76,6 +79,5 @@ public:
 private:
 	UFUNCTION(BlueprintCallable)
 	void Init();
-
-	TObjectPtr<AWeapnSystem> MainWeapon;
+	
 };
