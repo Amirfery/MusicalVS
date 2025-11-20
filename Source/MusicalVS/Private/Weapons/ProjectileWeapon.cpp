@@ -28,6 +28,9 @@ void AProjectileWeapon::BeginPlay()
 
 	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
 	FmodAudioComp->SetParameter(FName(Marker), 0);
+
+	FString Marker2 = AttackData->AttackMarkers[0].ToString();
+	FmodAudioComp->SetParameter(FName(Marker2), 0);
 }
 
 void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
@@ -66,6 +69,9 @@ void AProjectileWeapon::Upgrade_Implementation()
 	Level += 1;
 	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
 	FmodAudioComp->SetParameter(FName(Marker), Level);
+
+	FString Marker2 = AttackData->AttackMarkers[0].ToString();
+	FmodAudioComp->SetParameter(FName(Marker2), Level);
 	// FmodAudioComp->ParameterCache.Add(FName(TEXT("Piano Arp Level")), Level);
 }
 

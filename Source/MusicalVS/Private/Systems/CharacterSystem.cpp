@@ -106,7 +106,7 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
 			if (Weapons[Row]->AttackData->LevelUps.Num() > Weapons[Row]->Level)
 				ValidRows.Add(Row);
 		}
-		else if (Weapons.Num() < 3)
+		else if (Weapons.Num() < 10)
 			ValidRows.Add(Row);
 	}
 	TArray<FName> RandomRows;
