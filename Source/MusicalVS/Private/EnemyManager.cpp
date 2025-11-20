@@ -34,6 +34,8 @@ void AEnemyManager::Tick(float DeltaSeconds)
 		return;
 	APoolItem* TempEnemy = EnemyPool->GetNewItem();
 	TempEnemy->SetFloatValues({MaxDistance});
+	AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
+	Enemy->Initialize(EnemyTypes[FMath::RandRange(0, EnemyTypes.Num() - 1)]);
 	RelocateEnemy(TempEnemy);
 	bIsInCooldown = true;
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimer,
@@ -42,7 +44,7 @@ void AEnemyManager::Tick(float DeltaSeconds)
 		                                       bIsInCooldown = false;
 	                                       }), EnemySpawnInterval, false);
 	CurrentAliveEnemies++;
-	AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
+	
 	if (bIsFreeze)
 	{
 		Enemy->Freeze();

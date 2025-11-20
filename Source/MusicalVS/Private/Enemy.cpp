@@ -7,6 +7,8 @@
 #include "PoolSystem.h"
 #include "TickSubsystem.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/HealthComponent.h"
+#include "DataAssets/EnemyData.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Systems/CharacterSystem.h"
@@ -31,6 +33,7 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 	Mesh = GetComponentByClass<USkeletalMeshComponent>();
 	CapsuleComponent = GetComponentByClass<UCapsuleComponent>();
+	HealthComponent = GetComponentByClass<UHealthComponent>();
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
 	
@@ -72,6 +75,20 @@ void AEnemy::Die()
 	
 	FreeItem();
 	AEnemyManager::GetInstance()->EnemyDied(this);
+}
+
+void AEnemy::Initialize(UEnemyData* NewEnemyData)
+{
+	EnemyData = NewEnemyData;
+	HealthComponent->MaxHealth = EnemyData->Hp;
+	HealthComponent->CurrentHealth = EnemyData->Hp;
+	Mesh->SetSkeletalMesh(EnemyData->SkeletalMesh);
+	Mesh->SetAnimation(NewEnemyData->AnimSequence);
+	SetActorScale3D(EnemyData->Scale);
+	Speed = EnemyData->Speed;
+	Damage = EnemyData->Damage;
+	FBoxSphereBounds Bounds = Mesh->GetLocalBounds();
+	CapsuleComponent->SetCapsuleSize(Bounds.BoxExtent.X, Bounds.BoxExtent.Z);
 }
 
 void AEnemy::Freeze()

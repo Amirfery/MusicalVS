@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
+class UHealthComponent;
+class UEnemyData;
 class UCapsuleComponent;
 
 UCLASS()
@@ -22,6 +24,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Die();
 
+	void Initialize(UEnemyData* NewEnemyData);
+
 	void Freeze();
 	void Unfreeze();
 
@@ -35,12 +39,20 @@ protected:
 	virtual void PostLoad() override;
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	float Speed;
+
+	UPROPERTY(BlueprintReadWrite)
+	float Damage;
+	
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ACharacter> PlayerCharacter;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName XpPoolSystemName;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<UEnemyData> EnemyData;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> DynMat;
@@ -50,6 +62,9 @@ public:
 	
 	UPROPERTY(Transient)
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UHealthComponent> HealthComponent;
 
 	UPROPERTY(Transient)
 	float MaxDistance;

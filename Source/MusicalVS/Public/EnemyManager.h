@@ -7,6 +7,7 @@
 #include "EnemyManager.generated.h"
 
 
+class UEnemyData;
 class ACharacterSystem;
 class APoolItem;
 class AEnemy;
@@ -38,6 +39,9 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly)
 	FName EnemyPoolId;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TObjectPtr<UEnemyData>> EnemyTypes;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float InnerCircleRadius;

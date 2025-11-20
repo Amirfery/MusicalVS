@@ -12,14 +12,16 @@ class MUSICALVS_API UHealthComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(VisibleInstanceOnly)
-	float CurrentHealth;
+	
 
 public:
 	UHealthComponent();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float MaxHealth = 100.0f;
+
+	UPROPERTY(VisibleInstanceOnly)
+	float CurrentHealth;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChangedSignature OnHealthChanged;
