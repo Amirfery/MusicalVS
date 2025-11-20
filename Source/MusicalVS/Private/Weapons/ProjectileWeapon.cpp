@@ -9,6 +9,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Weapons/Projectile.h"
 
+#define ECC_Target ECC_GameTraceChannel2
 
 // Sets default values
 AProjectileWeapon::AProjectileWeapon()
@@ -25,7 +26,8 @@ void AProjectileWeapon::BeginPlay()
 	Damage = AttackData->BaseDamage;
 	EffectTime = AttackData->BaseEffectTime;
 
-	FmodAudioComp->SetParameter(FName(TEXT("Piano Arp Level")), 0);
+	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
+	FmodAudioComp->SetParameter(FName(Marker), 0);
 }
 
 void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
@@ -62,7 +64,8 @@ void AProjectileWeapon::Upgrade_Implementation()
 	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
 	SearchRadius =SearchRadius + (SearchRadius * LevelUp.RangeUp);
 	Level += 1;
-	FmodAudioComp->SetParameter(FName(TEXT("Piano Arp Level")), Level);
+	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
+	FmodAudioComp->SetParameter(FName(Marker), Level);
 	// FmodAudioComp->ParameterCache.Add(FName(TEXT("Piano Arp Level")), Level);
 }
 
@@ -74,42 +77,33 @@ void AProjectileWeapon::Attack_Implementation()
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(SearchRadius);
 
-	const bool bHasHit = GetWorld()->OverlapMultiByChannel(
-		Overlaps,
-		PlayerLoc,
-		FQuat::Identity,
-		ECC_Pawn,
-		Sphere
-	);
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, PlayerLoc, FQuat::Identity, ECC_Target, Sphere );
 	
-	if (!bHasHit)
+	if (Overlaps.IsEmpty())
 	{
 		return;
 	}
-
 	AActor* NearestEnemy = nullptr;
 	float MinDistSq = FLT_MAX;
-
-	for (auto& Overlap : Overlaps)
+	
+	if (TargetType == ETargetType::Random)
 	{
-		AActor* Other = Overlap.GetActor();
-		// UE_LOG(LogTemp, Warning, TEXT("Other is: %s, Class: %s"), 
-		// 	*Other->GetName(), 
-		// 	*Other->GetClass()->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), *Other->GetName());
-		if (!Other || Other == this)
-			continue;
-
-		if (AEnemy* Enemy = Cast<AEnemy>(Other))
+		NearestEnemy = Overlaps[FMath::RandRange(0, Overlaps.Num() - 1)].GetActor();
+	}
+	else
+	{
+		for (auto& Overlap : Overlaps)
 		{
-			// AEnemy* Enemy = Cast<AEnemy>(Other);
-			float DistSq = FVector::DistSquared(PlayerLoc, Enemy->GetActorLocation());
-			// UE_LOG(LogTemp, Log, TEXT("Found enemy: %s | Distance: %.1f"), *Enemy->GetName(), FMath::Sqrt(DistSq));
+			AActor* Other = Overlap.GetActor();
+			if (!Other || Other == this)
+				continue;
+		
+			float DistSq = FVector::DistSquared(PlayerLoc, Other->GetActorLocation());
 
 			if (DistSq < MinDistSq)
 			{
 				MinDistSq = DistSq;
-				NearestEnemy = Enemy;
+				NearestEnemy = Other;
 			}
 		}
 	}
@@ -118,6 +112,6 @@ void AProjectileWeapon::Attack_Implementation()
 	{
 		DrawDebugLine(GetWorld(), PlayerLoc, NearestEnemy->GetActorLocation(), FColor::Red, false, 0.5f, 0, 2.f);
 
-		SpawnProjectileAtEnemy(NearestEnemy);
+		SpawnProjectileAtEnemy(Cast<AEnemy>(NearestEnemy));
 	}
 }

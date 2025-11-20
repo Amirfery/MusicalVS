@@ -8,6 +8,13 @@
 
 class APoolManager;
 
+UENUM(BlueprintType)
+enum class ETargetType : uint8
+{
+	Random		UMETA(DisplayName="Random"),
+	Nearest		UMETA(DisplayName="Nearest")
+};
+
 UCLASS()
 class MUSICALVS_API AProjectileWeapon : public AWeapnSystem
 {
@@ -21,11 +28,15 @@ private:
 
 	float EffectTime;
 
+	UPROPERTY(EditDefaultsOnly)
+	ETargetType TargetType;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName PoolId;
 
 	virtual void BeginPlay() override;
+
 
 private:
 	void SpawnProjectileAtEnemy(const AActor* TargetEnemy) const;

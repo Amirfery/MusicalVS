@@ -14,7 +14,7 @@ class MUSICALVS_API AAoeWeapon : public AWeapnSystem
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	TSet<AActor*> EnemiesInRange;
+	TArray<FOverlapResult> EnemiesInRange;
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Radius;

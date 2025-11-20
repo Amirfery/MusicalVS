@@ -5,9 +5,11 @@
 
 #include "Components/HealthComponent.h"
 #include "DataAssets/AttackData.h"
+#include "Engine/OverlapResult.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
 
+#define ECC_Target ECC_GameTraceChannel2
 
 // Sets default values
 AAoeWeapon::AAoeWeapon()
@@ -36,26 +38,34 @@ void AAoeWeapon::OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AAc
 {
 	if (OtherActor->IsA(ACharacterSystem::StaticClass()))
 		return;
-	if (OtherActor && OtherActor != this)
-	{
-		EnemiesInRange.Add(OtherActor);
-	}
+	// if (OtherActor && OtherActor != this)
+	// {
+	// 	EnemiesInRange.Add(OtherActor);
+	// }
 	// UE_LOG(LogTemp, Warning, TEXT("%d"), EnemiesInRange.Num());
 }
 
 void AAoeWeapon::OnEnemyExitRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor && OtherActor != this)
-	{
-		EnemiesInRange.Remove(OtherActor);
-	}
+	// if (OtherActor && OtherActor != this)
+	// {
+	// 	EnemiesInRange.Remove(OtherActor);
+	// }
 }
 
 // Called every frame
 void AAoeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	TArray<FOverlapResult> Overlaps;
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
+
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+
+	EnemiesInRange = Overlaps;
+	
 }
 
 void AAoeWeapon::Upgrade_Implementation()
@@ -73,8 +83,9 @@ void AAoeWeapon::Upgrade_Implementation()
 void AAoeWeapon::Attack_Implementation()
 {
 	Super::Attack_Implementation();
-	for (AActor* Enemy : EnemiesInRange)
+	for (auto EnemyOverlap : EnemiesInRange)
 	{
+		AActor* Enemy = EnemyOverlap.GetActor();
 		if (!IsValid(Enemy))
 			continue;
 		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(Enemy->GetRootComponent()))
