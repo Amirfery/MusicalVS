@@ -17,6 +17,9 @@ class MUSICALVS_API UGameManager : public UGameInstanceSubsystem
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UDataTable> WeaponsDataTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UDataTable> LevelsDataTable;
 	
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

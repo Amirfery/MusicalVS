@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DataAssets/LevelData.h"
 #include "EnemyManager.generated.h"
 
 
@@ -36,12 +37,18 @@ public:
 
 	void FreezeEnemies();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static AEnemyManager* GetInstance() {return Instance;}
+
+	UFUNCTION()
+	void SetNewPhaseData(FSpawnPhase NewPhase);
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 	FName EnemyPoolId;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TObjectPtr<UEnemyData>> EnemyTypes;
+	TArray<FEnemySpawnInfo> EnemyTypes;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float InnerCircleRadius;
@@ -55,8 +62,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float EnemySpawnInterval;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static AEnemyManager* GetInstance() {return Instance;}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FSpawnPhase PhaseData;
 
 private:
 	bool bIsInCooldown;
@@ -80,4 +87,7 @@ private:
 
 	UPROPERTY(Transient)
 	FTimerHandle FreezeTimer;
+
+	UPROPERTY(Transient)
+	float MaxChance;
 };

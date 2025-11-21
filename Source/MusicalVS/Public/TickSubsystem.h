@@ -6,9 +6,10 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "TickSubsystem.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTickSubsystemDelegate, float, DeltaTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLevelTimerDelegate, int32, CurrentTime);
+
+
 UCLASS()
 class MUSICALVS_API UTickSubsystem : public UWorldSubsystem, public FTickableGameObject
 {
@@ -21,13 +22,27 @@ class MUSICALVS_API UTickSubsystem : public UWorldSubsystem, public FTickableGam
 	virtual bool IsTickable() const override {return true;}
 	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(UTickSubsystem, STATGROUP_Tickables); }
 
+	UFUNCTION(BlueprintCallable)
+	void StartTimer();
+	void StopTimer();
+
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTickSubsystemDelegate, float, DeltaTime);
 	UPROPERTY(BlueprintReadOnly)
 	FTickSubsystemDelegate EnemyTickDelegate;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, BlueprintAssignable)
+	FLevelTimerDelegate LevelTimerDelegate;
+
+	UPROPERTY(Transient)
 	bool bEnemyCanTick;
-	
+
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentTime;
+
+	UPROPERTY(BlueprintReadOnly)
+	float PreviousTime;
+
+	UPROPERTY(Transient)
+	bool bIsTimeTicking;
 	
 };

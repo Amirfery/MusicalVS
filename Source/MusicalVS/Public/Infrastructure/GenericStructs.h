@@ -2,6 +2,7 @@
 
 #include "GenericStructs.generated.h"
 
+class ULevelData;
 class UAttackData;
 class AWeapnSystem;
 
@@ -52,4 +53,22 @@ struct FWeaponToUpgrade
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UTexture2D> Icon;
+};
+
+USTRUCT(BlueprintType)
+struct FLevelRow : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UTexture2D> Icon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<ULevelData> LevelData;
 };

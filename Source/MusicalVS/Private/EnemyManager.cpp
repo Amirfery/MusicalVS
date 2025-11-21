@@ -4,6 +4,7 @@
 #include "EnemyManager.h"
 
 #include "Enemy.h"
+#include "LevelManager.h"
 #include "PoolManager.h"
 #include "PoolSystem.h"
 #include "TickSubsystem.h"
@@ -23,6 +24,7 @@ void AEnemyManager::BeginPlay()
 	Super::BeginPlay();
 	EnemyPool = APoolSystem::GetInstance()->PoolInstances[EnemyPoolId];
 	CurrentAliveEnemies = 0;
+	GetWorld()->GetSubsystem<ULevelManager>()->OnPhaseChanged.AddDynamic(this, &AEnemyManager::SetNewPhaseData);
 }
 
 void AEnemyManager::Tick(float DeltaSeconds)
@@ -32,10 +34,24 @@ void AEnemyManager::Tick(float DeltaSeconds)
 		return;
 	if (bIsInCooldown)
 		return;
+	
 	APoolItem* TempEnemy = EnemyPool->GetNewItem();
 	TempEnemy->SetFloatValues({MaxDistance});
 	AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
-	Enemy->Initialize(EnemyTypes[FMath::RandRange(0, EnemyTypes.Num() - 1)]);
+
+	float RandomFloat = FMath::RandRange(0.0f, MaxChance);
+	
+	float Offset = 0.0f;
+	for (FEnemySpawnInfo Element : EnemyTypes)
+	{
+		if (RandomFloat <= Element.SpawnChance + Offset)
+		{
+			Enemy->Initialize(Element.EnemyDataAsset);
+			break;
+		}
+			Offset += Element.SpawnChance;
+	}
+	
 	RelocateEnemy(TempEnemy);
 	bIsInCooldown = true;
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimer,
@@ -96,4 +112,16 @@ void AEnemyManager::FreezeEnemies()
 		GetWorld()->GetSubsystem<UTickSubsystem>()->bEnemyCanTick = true;
 		bIsFreeze = false;
 	}), 3.f, false);
+}
+
+void AEnemyManager::SetNewPhaseData(FSpawnPhase NewPhase)
+{
+	PhaseData = NewPhase;
+	EnemyTypes.Empty();
+	MaxChance = 0.0f;
+	EnemyTypes = PhaseData.EnemiesSpawnInfo;
+	for (FEnemySpawnInfo EnemySpawnInfo : PhaseData.EnemiesSpawnInfo)
+	{
+		MaxChance += EnemySpawnInfo.SpawnChance;
+	}
 }
