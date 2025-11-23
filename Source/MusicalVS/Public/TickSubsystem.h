@@ -24,6 +24,7 @@ class MUSICALVS_API UTickSubsystem : public UWorldSubsystem, public FTickableGam
 
 	UFUNCTION(BlueprintCallable)
 	void StartTimer();
+	UFUNCTION(BlueprintCallable)
 	void StopTimer();
 
 public:
