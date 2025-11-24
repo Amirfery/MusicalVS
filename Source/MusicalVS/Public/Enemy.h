@@ -50,6 +50,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName XpPoolSystemName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FName DamageTextPoolSystemName;
 	
 	UPROPERTY(Transient)
 	TObjectPtr<UEnemyData> EnemyData;

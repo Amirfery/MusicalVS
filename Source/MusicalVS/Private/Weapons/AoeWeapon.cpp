@@ -6,6 +6,7 @@
 #include "Components/HealthComponent.h"
 #include "DataAssets/AttackData.h"
 #include "Engine/OverlapResult.h"
+#include "Interfaces/Damageable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
 
@@ -95,9 +96,7 @@ void AAoeWeapon::Attack_Implementation()
 			Dir.Normalize();
 			Prim->AddImpulse(Dir * EffectTime, NAME_None, true);
 		}
-		if (UHealthComponent* HealthComponent = Enemy->GetComponentByClass<UHealthComponent>())
-		{
-			HealthComponent->DecreaseHealth(Damage);
-		}
+		if (Enemy->Implements<UDamageable>())
+			IDamageable::Execute_TakeDamage(Enemy, Damage);
 	}
 }
