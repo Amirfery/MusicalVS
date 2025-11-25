@@ -32,6 +32,9 @@ private:
 	UPROPERTY(BlueprintAssignable)
 	FOneXPAdded OnXPAdded;
 
+	UPROPERTY(Transient)
+	bool bIsGamePaused;
+
 public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 XP;

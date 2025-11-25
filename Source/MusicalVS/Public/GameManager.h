@@ -23,4 +23,8 @@ public:
 	
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+	
+	UFUNCTION(BlueprintCallable)
+	void StartGame() const;
 };

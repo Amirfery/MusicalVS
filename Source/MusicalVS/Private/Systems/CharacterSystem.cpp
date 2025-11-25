@@ -56,6 +56,7 @@ void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 	for (auto Temp : Weapons)
 	{
 		Temp.Value->SetEventPercentage(0);
+		Temp.Value->SetPaused(bIsGamePaused);
 	}
 }
 
@@ -139,6 +140,7 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
 
 void ACharacterSystem::SetPaused(bool Paused)
 {
+	bIsGamePaused = Paused;
 	for (const TPair<FName, TObjectPtr<AWeapnSystem>>& Weapon : Weapons)
 	{
 		Weapon.Value->SetPaused(Paused);

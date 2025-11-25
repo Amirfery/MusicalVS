@@ -3,6 +3,9 @@
 
 #include "GameManager.h"
 
+#include "UiManager.h"
+#include "Kismet/GameplayStatics.h"
+
 void UGameManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -15,4 +18,10 @@ void UGameManager::Initialize(FSubsystemCollectionBase& Collection)
 			nullptr,
 			TEXT("/Game/Data/Level/DT_Levels.DT_Levels")
 		);
+}
+
+void UGameManager::StartGame() const
+{
+	GetGameInstance()->GetSubsystem<UUiManager>()->ToggleMainMenu();
+	UGameplayStatics::OpenLevel(GetWorld(), "Level");
 }

@@ -11,7 +11,6 @@
 #include "DataAssets/EnemyData.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "Systems/CharacterSystem.h"
 
 
 // Sets default values
