@@ -12,9 +12,9 @@ void UUiManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	
-	MainMenuWidgetClass = LoadClass<UUserWidget>(nullptr,TEXT("/Game/UI/Widgets/MainMenu/WBP_MainMenuPanel.WBP_MainMenuPanel_C"));
-
-	GameOverWidgetClass =  LoadClass<UUserWidget>(nullptr,TEXT("/Game/UI/Widgets/WBP_GameOver.WBP_GameOver_C"));
+	// MainMenuWidgetClass = LoadClass<UUserWidget>(nullptr,TEXT("/Game/UI/Widgets/MainMenu/WBP_MainMenuPanel.WBP_MainMenuPanel_C"));
+	//
+	// GameOverWidgetClass =  LoadClass<UUserWidget>(nullptr,TEXT("/Game/UI/Widgets/WBP_GameOver.WBP_GameOver_C"));
 }
 
 void UUiManager::ToggleMainMenu()

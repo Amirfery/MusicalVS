@@ -7,7 +7,7 @@
 #include "UiManager.generated.h"
 
 
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, Abstract)
 class MUSICALVS_API UUiManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()

@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, Abstract)
 class MUSICALVS_API UGameManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
