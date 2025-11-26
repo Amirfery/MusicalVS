@@ -9,8 +9,8 @@
 /**
  * 
  */
-UCLASS(Blueprintable, Abstract)
-class MUSICALVS_API UGameManager : public UGameInstanceSubsystem
+UCLASS(Blueprintable)
+class MUSICALVS_API UGameManager : public UGameInstance
 {
 	GENERATED_BODY()
 
@@ -22,8 +22,6 @@ public:
 	TObjectPtr<UDataTable> LevelsDataTable;
 	
 public:
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-
 	
 	UFUNCTION(BlueprintCallable)
 	void StartGame() const;

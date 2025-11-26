@@ -86,7 +86,7 @@ void ACharacterSystem::AddXP(int32 Amount)
 
 TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
 {
-	UGameManager* GM = GetGameInstance()->GetSubsystem<UGameManager>();
+	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
 
 	UDataTable* Table = GM->WeaponsDataTable;
 	
