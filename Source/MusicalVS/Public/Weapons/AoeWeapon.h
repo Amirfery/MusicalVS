@@ -12,7 +12,7 @@ class MUSICALVS_API AAoeWeapon : public AWeapnSystem
 {
 	GENERATED_BODY()
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FOverlapResult> EnemiesInRange;
 public:

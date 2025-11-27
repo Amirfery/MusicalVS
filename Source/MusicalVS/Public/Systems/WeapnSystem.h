@@ -41,7 +41,7 @@ public:
 
 private:
 	UFUNCTION()
-	void OnTimelineMarker(FString Name, int32 Position);
+	virtual void OnTimelineMarker(FString Name, int32 Position);
 
 protected:
 	virtual void BeginPlay() override;
