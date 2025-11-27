@@ -24,16 +24,24 @@ void ALobbedProjectile::BeginPlay()
 void ALobbedProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (GetActorLocation().Z <= TargetLocation.Z)
+		Explode();
 }
 
 void ALobbedProjectile::InitProjectile(const FVector& Target, const FProjectileData& ProjectileData)
 {
 	Damage = ProjectileData.Damage;
+	TargetLocation = Target;
 	auto Component = GetComponentByClass<UProjectileMovementComponent>();
 	const float Vz = ProjectileData.Velocity * -GetWorld()->GetGravityZ() * Component->ProjectileGravityScale * 0.5f;
 	const float Vx = (Target.X - GetActorLocation().X) / ProjectileData.Velocity;
 	const float Vy = (Target.Y - GetActorLocation().Y) / ProjectileData.Velocity;
 	Component->Velocity = FVector(Vx, Vy, Vz);
 
+}
+
+void ALobbedProjectile::Explode()
+{
+	FreeItem();
 }
 

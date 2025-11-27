@@ -25,4 +25,10 @@ public:
 
 	virtual void InitProjectile(const FVector& Target, const FProjectileData& ProjectileData) override;
 
+	void Explode();
+
+private:
+	UPROPERTY(Transient)
+	FVector TargetLocation;
+
 };
