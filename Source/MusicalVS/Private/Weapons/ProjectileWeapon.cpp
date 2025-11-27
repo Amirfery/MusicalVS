@@ -25,6 +25,7 @@ void AProjectileWeapon::BeginPlay()
 	SearchRadius = AttackData->BaseRange;
 	Damage = AttackData->BaseDamage;
 	EffectTime = AttackData->BaseEffectTime;
+	ProjectileSpeed = AttackData->ProjectileSpeed;
 
 	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
 	FmodAudioComp->SetParameter(FName(Marker), 0);
@@ -41,15 +42,10 @@ void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 	if (!Item) return;
 
 	FVector SpawnLoc = GetActorLocation() + FVector(0, 0, 50.f);
-	FVector TargetLoc = TargetEnemy->GetActorLocation();
-	FVector Dir = (TargetLoc - SpawnLoc).GetSafeNormal();
-
 	Item->SetActorLocation(SpawnLoc);
-	FRotator SpawnRot = Dir.Rotation();
-	Item->SetActorRotation(SpawnRot);
 	AProjectile* Projectile = Cast<AProjectile>(Item);
 	if (!Projectile) return;
-	Projectile->InitProjectile(EffectTime, {1000, 0, 0}, Damage);
+	Projectile->InitProjectile(TargetEnemy->GetActorLocation(), FProjectileData{ProjectileSpeed, EffectTime, Damage});
 	
 }
 
@@ -66,6 +62,7 @@ void AProjectileWeapon::Upgrade_Implementation()
 	Damage = Damage + (Damage * LevelUp.DamageUp);
 	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
 	SearchRadius =SearchRadius + (SearchRadius * LevelUp.RangeUp);
+	ProjectileSpeed =ProjectileSpeed + (ProjectileSpeed * LevelUp.RangeUp);
 	Level += 1;
 	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
 	FmodAudioComp->SetParameter(FName(Marker), Level);

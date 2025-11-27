@@ -117,6 +117,7 @@ void AEnemyManager::FreezeEnemies()
 void AEnemyManager::SetNewPhaseData(FSpawnPhase NewPhase)
 {
 	PhaseData = NewPhase;
+	EnemySpawnInterval = PhaseData.SpawnRate;
 	EnemyTypes.Empty();
 	MaxChance = 0.0f;
 	EnemyTypes = PhaseData.EnemiesSpawnInfo;

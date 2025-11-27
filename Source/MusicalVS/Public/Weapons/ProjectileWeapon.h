@@ -25,6 +25,8 @@ private:
 	float SearchRadius;
 
 	float Damage;
+	
+	float ProjectileSpeed;
 
 	float EffectTime;
 

@@ -27,13 +27,16 @@ void AProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AProjectile::InitProjectile(const float ProjectileLifeSpan, const FVector& ProjectileVelocity, const float ProjectileDamage)
+void AProjectile::InitProjectile(const FVector& Target, const FProjectileData& ProjectileData)
 {
 	// UKismetSystemLibrary::PrintString(GetWorld(), GetName(), true, false, FColor::Red, 1);
-	LifeSpan = ProjectileLifeSpan;
-	Velocity = ProjectileVelocity;
-	Damage = ProjectileDamage;
-	GetComponentByClass<UProjectileMovementComponent>()->SetVelocityInLocalSpace({1000, 0, 0});
+	LifeSpan = ProjectileData.LifeSpan;
+	Damage = ProjectileData.Damage;
+	FVector Dir = (Target - GetActorLocation()).GetSafeNormal();
+	Velocity = Dir * ProjectileData.Velocity;
+	FRotator SpawnRot = Dir.Rotation();
+	SetActorRotation(SpawnRot);
+	GetComponentByClass<UProjectileMovementComponent>()->SetVelocityInLocalSpace(FVector(ProjectileData.Velocity, 0, 0));
 	GetWorld()->GetTimerManager().SetTimer(LifeSpanTimer, FTimerDelegate::CreateLambda([this]
 	{
 		FreeItem();

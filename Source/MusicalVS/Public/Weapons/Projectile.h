@@ -6,6 +6,18 @@
 #include "PoolItem.h"
 #include "Projectile.generated.h"
 
+USTRUCT(BlueprintType)
+struct FProjectileData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Velocity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float LifeSpan;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Damage;
+};
 UCLASS()
 class MUSICALVS_API AProjectile : public APoolItem
 {
@@ -35,7 +47,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void InitProjectile(float ProjectileLifeSpan, const FVector& ProjectileVelocity, float ProjectileDamage);
+	virtual void InitProjectile(const FVector& Target, const FProjectileData& ProjectileData);
 
 	virtual void FreeItem_Implementation() override;
 };

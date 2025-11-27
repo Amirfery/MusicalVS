@@ -19,6 +19,9 @@ struct FAttackLevelStruct
 	float RangeUp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(UIMin = 0, UIMax = 100, ClampMin = 0, ClampMax = 1))
 	float EffectTimeUp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(UIMin = 0, UIMax = 100, ClampMin = 0, ClampMax = 1))
+	float ProjectileSpeedUp;
+	
 };
 UCLASS(BlueprintType)
 class MUSICALVS_API UAttackData : public UDataAsset
@@ -36,6 +39,8 @@ public:
 	float BaseRange;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float BaseEffectTime;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float ProjectileSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FAttackLevelStruct> LevelUps;
 	
