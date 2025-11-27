@@ -59,14 +59,6 @@ void AAoeWeapon::OnEnemyExitRange(UPrimitiveComponent* OverlappedComponent, AAct
 void AAoeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	TArray<FOverlapResult> Overlaps;
-	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
-
-	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
-
-	EnemiesInRange = Overlaps;
-	
 }
 
 void AAoeWeapon::Upgrade_Implementation()
@@ -84,6 +76,12 @@ void AAoeWeapon::Upgrade_Implementation()
 void AAoeWeapon::Attack_Implementation()
 {
 	Super::Attack_Implementation();
+	TArray<FOverlapResult> Overlaps;
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
+
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+
+	EnemiesInRange = Overlaps;
 	for (auto EnemyOverlap : EnemiesInRange)
 	{
 		AActor* Enemy = EnemyOverlap.GetActor();
