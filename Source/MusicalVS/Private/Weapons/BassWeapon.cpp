@@ -67,3 +67,13 @@ void ABassWeapon::Attack_Implementation()
 	}
 }
 
+void ABassWeapon::Upgrade_Implementation()
+{
+	FAttackLevelStruct LevelUp = AttackData->LevelUps[Level];
+	Damage = Damage + (Damage * LevelUp.DamageUp);
+	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
+	Radius =Radius + (Radius * LevelUp.RangeUp);
+	Level += 1;
+	FmodAudioComp->SetParameter(FName(TEXT("Bass Level")), Level);
+}
+

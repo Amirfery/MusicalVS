@@ -3,7 +3,9 @@
 
 #include "Weapons/LobbedProjectile.h"
 
+#include "Engine/OverlapResult.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Interfaces/Damageable.h"
 
 
 // Sets default values
@@ -32,6 +34,7 @@ void ALobbedProjectile::InitProjectile(const FVector& Target, const FProjectileD
 {
 	Damage = ProjectileData.Damage;
 	TargetLocation = Target;
+	LifeSpan = ProjectileData.LifeSpan;
 	auto Component = GetComponentByClass<UProjectileMovementComponent>();
 	const float Vz = ProjectileData.Velocity * -GetWorld()->GetGravityZ() * Component->ProjectileGravityScale * 0.5f;
 	const float Vx = (Target.X - GetActorLocation().X) / ProjectileData.Velocity;
@@ -42,6 +45,19 @@ void ALobbedProjectile::InitProjectile(const FVector& Target, const FProjectileD
 
 void ALobbedProjectile::Explode()
 {
+	TArray<FOverlapResult> Overlaps;
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(LifeSpan);
+	
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_GameTraceChannel2, Sphere );
+	
+	for (auto EnemyOverlap : Overlaps)
+	{
+		AActor* Enemy = EnemyOverlap.GetActor();
+		if (!IsValid(Enemy))
+			continue;
+		if (Enemy->Implements<UDamageable>())
+			IDamageable::Execute_TakeDamage(Enemy, Damage);
+	}
 	FreeItem();
 }
 

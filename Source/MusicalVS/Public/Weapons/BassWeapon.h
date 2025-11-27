@@ -32,5 +32,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void Attack_Implementation() override;
+
+	virtual void Upgrade_Implementation() override;
 	
 };
