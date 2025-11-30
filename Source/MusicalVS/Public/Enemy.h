@@ -34,6 +34,8 @@ public:
 protected:
 	UFUNCTION()
 	void TickEnemy(float DeltaTime);
+	UFUNCTION()
+	void TickAnimation(float DeltaTime);
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PostLoad() override;
@@ -61,7 +63,10 @@ public:
 	TObjectPtr<UMaterialInstanceDynamic> DynMat;
 
 	UPROPERTY(Transient)
-	TObjectPtr<USkeletalMeshComponent> Mesh;
+	TObjectPtr<UStaticMeshComponent> Mesh;
+	
+	UPROPERTY(Transient)
+	int32 MeshIndex = 0;
 	
 	UPROPERTY(Transient)
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;

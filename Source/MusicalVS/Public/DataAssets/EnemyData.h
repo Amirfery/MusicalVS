@@ -22,6 +22,9 @@ public:
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<TObjectPtr<UStaticMesh>> StaticMeshes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAnimSequence> AnimSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

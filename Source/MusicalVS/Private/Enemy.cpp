@@ -30,11 +30,12 @@ void AEnemy::Init_Implementation(APoolManager* PoolManager)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	Mesh = GetComponentByClass<USkeletalMeshComponent>();
+	Mesh = GetComponentByClass<UStaticMeshComponent>();
 	CapsuleComponent = GetComponentByClass<UCapsuleComponent>();
 	HealthComponent = GetComponentByClass<UHealthComponent>();
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
+	GetWorld()->GetSubsystem<UTickSubsystem>()->AnimationDelegate.AddDynamic(this, &AEnemy::TickAnimation);
 	
 }
 
@@ -83,26 +84,30 @@ void AEnemy::Initialize(UEnemyData* NewEnemyData)
 	EnemyData = NewEnemyData;
 	HealthComponent->MaxHealth = EnemyData->Hp;
 	HealthComponent->CurrentHealth = EnemyData->Hp;
-	Mesh->SetSkeletalMesh(EnemyData->SkeletalMesh);
+	Mesh->SetStaticMesh(EnemyData->StaticMeshes[0]);
 	Mesh->CreateAndSetMaterialInstanceDynamicFromMaterial(0, NewEnemyData->Material);
-	Mesh->SetAnimation(NewEnemyData->AnimSequence);
+	// Mesh->SetAnimation(NewEnemyData->AnimSequence);
 	SetActorScale3D(EnemyData->Scale);
 	Speed = EnemyData->Speed;
 	Damage = EnemyData->Damage;
-	FBoxSphereBounds Bounds = Mesh->GetLocalBounds();
+	FVector Min, Max;
+	Mesh->GetLocalBounds(Min, Max);
+	
+	FBoxSphereBounds Bounds(FBox(Min, Max));
+
 	CapsuleComponent->SetCapsuleSize(Bounds.BoxExtent.X, Bounds.BoxExtent.Z);
 }
 
 void AEnemy::Freeze()
 {
 	CapsuleComponent->SetPhysicsLinearVelocity(FVector(0, 0, 0));
-	Mesh->Stop();
+	// Mesh->Stop();
 	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(0,0,1));
 }
 
 void AEnemy::Unfreeze()
 {
-	Mesh->Play(true);
+	// Mesh->Play(true);
 	DynMat->SetVectorParameterValue(FName("Tint"), FLinearColor(1,1,1));
 }
 
@@ -115,5 +120,11 @@ void AEnemy::SetFloatValues_Implementation(const TArray<float>& FloatValues)
 void AEnemy::TickEnemy(float DeltaTime)
 {
 	Tick(DeltaTime);
+}
+
+void AEnemy::TickAnimation(float DeltaTime)
+{
+	MeshIndex = (MeshIndex + 1) % EnemyData->StaticMeshes.Num();
+	Mesh->SetStaticMesh(EnemyData->StaticMeshes[MeshIndex]);
 }
 
