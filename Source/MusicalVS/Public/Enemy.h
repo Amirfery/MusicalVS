@@ -71,4 +71,7 @@ public:
 
 	UPROPERTY(Transient)
 	float MaxDistance;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsAlive;
 };

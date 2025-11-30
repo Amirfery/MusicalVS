@@ -15,7 +15,7 @@ APoolItem::APoolItem()
 
 void APoolItem::FreeItem_Implementation()
 {
-	Initialized = false;
+	//Initialized = false;
 	if (ParentPoolManager)
 	{
 		ParentPoolManager->FreeItem(this);

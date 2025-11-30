@@ -25,6 +25,9 @@ public:
 	TObjectPtr<UAnimSequence> AnimSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInterface> Material;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Speed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

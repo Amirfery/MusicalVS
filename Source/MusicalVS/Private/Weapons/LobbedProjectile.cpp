@@ -49,6 +49,8 @@ void ALobbedProjectile::Explode()
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(LifeSpan);
 	
 	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_GameTraceChannel2, Sphere );
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), LifeSpan, 32, FColor::Red, false, 1);
 	
 	for (auto EnemyOverlap : Overlaps)
 	{

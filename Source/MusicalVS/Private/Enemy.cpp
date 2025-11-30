@@ -50,7 +50,7 @@ void AEnemy::PostLoad()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!Initialized)
+	if (!bIsAlive)
 		return;
 	FVector DistanceVec = PlayerCharacter->GetActorLocation() - GetActorLocation();
 	float Distance = DistanceVec.Length();
@@ -62,10 +62,11 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::Die()
 {
+	bIsAlive = false;
 	APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
 	
 	float RandomNum = FMath::RandRange(0.f, 100.f);
-	if (RandomNum < 20)
+	if (RandomNum < 0.001)
 	{
 		APoolItem* Item = APoolSystem::PoolSystemInstance->PoolInstances[FName("PowerUp")]->GetNewItem();
 		Item->SetFloatValues({static_cast<float>(FMath::RandRange(0, 1))});
@@ -78,10 +79,12 @@ void AEnemy::Die()
 
 void AEnemy::Initialize(UEnemyData* NewEnemyData)
 {
+	bIsAlive = true;
 	EnemyData = NewEnemyData;
 	HealthComponent->MaxHealth = EnemyData->Hp;
 	HealthComponent->CurrentHealth = EnemyData->Hp;
 	Mesh->SetSkeletalMesh(EnemyData->SkeletalMesh);
+	Mesh->CreateAndSetMaterialInstanceDynamicFromMaterial(0, NewEnemyData->Material);
 	Mesh->SetAnimation(NewEnemyData->AnimSequence);
 	SetActorScale3D(EnemyData->Scale);
 	Speed = EnemyData->Speed;
