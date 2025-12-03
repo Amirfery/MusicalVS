@@ -24,6 +24,10 @@
 		{
 			"Name": "CameraShakePreviewer",
 			"Enabled": false
+		},
+		{
+			"Name": "AnimToTexture",
+			"Enabled": true
 		}
 	]
 }
