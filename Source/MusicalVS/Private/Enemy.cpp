@@ -93,7 +93,7 @@ void AEnemy::Initialize(UEnemyData* NewEnemyData)
 	Damage = EnemyData->Damage;
 	FVector Min, Max;
 	Mesh->GetLocalBounds(Min, Max);
-	FVector  Bounds = (Max - Min) * 0.5f;
+	FVector  Bounds = (Max - Min) * 0.5;
 	CapsuleComponent->SetCapsuleSize(Bounds.X, Bounds.Z);
 }
 
