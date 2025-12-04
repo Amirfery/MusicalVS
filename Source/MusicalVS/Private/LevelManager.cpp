@@ -20,7 +20,7 @@ void ULevelManager::Initialize(FSubsystemCollectionBase& Collection)
 void ULevelManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-	LevelData = Cast<UGameManager>(GetWorld()->GetGameInstance())->LevelsDataTable->FindRow<FLevelRow>(FName("Level1"),TEXT("Level lookup"))->LevelData;
+	LevelData = Cast<UGameManager>(GetWorld()->GetGameInstance())->LevelsDataTable->FindRow<FLevelRow>(FName("Level0"),TEXT("Level lookup"))->LevelData;
 	GetWorld()->GetSubsystem<UTickSubsystem>()->LevelTimerDelegate.AddDynamic(this, &ULevelManager::CheckLevelPhase);
 }
 

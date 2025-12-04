@@ -30,25 +30,14 @@ void UTickSubsystem::Tick(float DeltaTime)
 			PreviousTime = FMath::Floor(CurrentTime);
 		}
 	}
-	if (bIsAnimationTimeTicking)
-	{
-		AnimationCurrentTime += DeltaTime;
-		if (AnimationCurrentTime - AnimationPreviousTime > 1.0f/AnimationFPS)
-		{
-			AnimationDelegate.Broadcast(AnimationCurrentTime-AnimationPreviousTime);
-			AnimationPreviousTime = AnimationCurrentTime;
-		}
-	}
 }
 
 void UTickSubsystem::StartTimer()
 {
 	bIsTimeTicking = true;
-	bIsAnimationTimeTicking = true;
 }
 
 void UTickSubsystem::StopTimer()
 {
 	bIsTimeTicking = false;
-	bIsAnimationTimeTicking = false;
 }

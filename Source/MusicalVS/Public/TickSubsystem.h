@@ -9,6 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTickSubsystemDelegate, float, DeltaTime);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLevelTimerDelegate, int32, CurrentTime);
 
+
 UCLASS()
 class MUSICALVS_API UTickSubsystem : public UWorldSubsystem, public FTickableGameObject
 {
@@ -33,9 +34,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, BlueprintAssignable)
 	FLevelTimerDelegate LevelTimerDelegate;
 
-	UPROPERTY(BlueprintReadOnly)
-	FTickSubsystemDelegate AnimationDelegate;
-
 	UPROPERTY(Transient)
 	bool bEnemyCanTick;
 
@@ -47,17 +45,5 @@ public:
 
 	UPROPERTY(Transient)
 	bool bIsTimeTicking;
-	
-	UPROPERTY(BlueprintReadOnly)
-	float AnimationCurrentTime;
-
-	UPROPERTY(BlueprintReadOnly)
-	float AnimationPreviousTime;
-
-	UPROPERTY(Transient)
-	bool bIsAnimationTimeTicking;
-
-	UPROPERTY(EditDefaultsOnly)
-	float AnimationFPS = 6.0f;
 	
 };

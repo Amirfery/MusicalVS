@@ -19,10 +19,7 @@ public:
 	FName DisplayName;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<USkeletalMesh> SkeletalMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<TObjectPtr<UStaticMesh>> StaticMeshes;
+	TObjectPtr<UStaticMesh> SkeletalMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAnimSequence> AnimSequence;

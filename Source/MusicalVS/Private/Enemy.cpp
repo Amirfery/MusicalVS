@@ -35,7 +35,6 @@ void AEnemy::BeginPlay()
 	HealthComponent = GetComponentByClass<UHealthComponent>();
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
-	GetWorld()->GetSubsystem<UTickSubsystem>()->AnimationDelegate.AddDynamic(this, &AEnemy::TickAnimation);
 	
 }
 
@@ -84,18 +83,18 @@ void AEnemy::Initialize(UEnemyData* NewEnemyData)
 	EnemyData = NewEnemyData;
 	HealthComponent->MaxHealth = EnemyData->Hp;
 	HealthComponent->CurrentHealth = EnemyData->Hp;
-	Mesh->SetStaticMesh(EnemyData->StaticMeshes[0]);
-	Mesh->CreateAndSetMaterialInstanceDynamicFromMaterial(0, NewEnemyData->Material);
-	// Mesh->SetAnimation(NewEnemyData->AnimSequence);
+	Mesh->SetStaticMesh(EnemyData->SkeletalMesh);
+	DynMat = Mesh->CreateAndSetMaterialInstanceDynamicFromMaterial(0, NewEnemyData->Material);
+	DynMat->SetScalarParameterValue(FName("TimeOffset"), FMath::RandRange(1, 100));
+	float temp;
+	DynMat->GetScalarParameterValue(FName("TimeOffset"), temp);
 	SetActorScale3D(EnemyData->Scale);
 	Speed = EnemyData->Speed;
 	Damage = EnemyData->Damage;
 	FVector Min, Max;
 	Mesh->GetLocalBounds(Min, Max);
-	
-	FBoxSphereBounds Bounds(FBox(Min, Max));
-
-	CapsuleComponent->SetCapsuleSize(Bounds.BoxExtent.X, Bounds.BoxExtent.Z);
+	FVector  Bounds = (Max - Min) * 0.5f;
+	CapsuleComponent->SetCapsuleSize(Bounds.X, Bounds.Z);
 }
 
 void AEnemy::Freeze()
@@ -120,11 +119,5 @@ void AEnemy::SetFloatValues_Implementation(const TArray<float>& FloatValues)
 void AEnemy::TickEnemy(float DeltaTime)
 {
 	Tick(DeltaTime);
-}
-
-void AEnemy::TickAnimation(float DeltaTime)
-{
-	MeshIndex = (MeshIndex + 1) % EnemyData->StaticMeshes.Num();
-	Mesh->SetStaticMesh(EnemyData->StaticMeshes[MeshIndex]);
 }
 
