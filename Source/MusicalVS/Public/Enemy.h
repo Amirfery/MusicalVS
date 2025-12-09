@@ -30,10 +30,12 @@ public:
 	void Unfreeze();
 
 	virtual void SetFloatValues_Implementation(const TArray<float>& FloatValues) override;
-	
-protected:
+
 	UFUNCTION()
 	void TickEnemy(float DeltaTime);
+	
+protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PostLoad() override;

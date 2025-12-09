@@ -52,7 +52,7 @@ void AWeapnSystem::BeginPlay()
 void AWeapnSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, false, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, false, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
 }
 
 float AWeapnSystem::GetEventPercentage()

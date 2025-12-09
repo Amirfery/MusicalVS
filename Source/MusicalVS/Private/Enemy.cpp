@@ -43,6 +43,8 @@ void AEnemy::PostLoad()
 	Super::PostLoad();
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bAllowTickBatching = true;
+	PrimaryActorTick.bRunOnAnyThread = true;
 	SetActorTickEnabled(false); 
 }
 
