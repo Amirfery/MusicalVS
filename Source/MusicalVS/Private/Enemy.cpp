@@ -11,6 +11,7 @@
 #include "DataAssets/EnemyData.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -54,6 +55,11 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (!bIsAlive)
 		return;
+	FVector TargetValue = (PlayerCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal() * Speed;
+	CapsuleComponent->SetPhysicsLinearVelocity(TargetValue);
+	// AddActorWorldOffset(TargetValue * DeltaTime);
+	FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCharacter->GetActorLocation());
+	Mesh->SetRelativeRotation(FRotator(0, NewRotator.Yaw - 90.0f, 0));
 	FVector DistanceVec = PlayerCharacter->GetActorLocation() - GetActorLocation();
 	float Distance = DistanceVec.Length();
 	if (Distance > MaxDistance)
