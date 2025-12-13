@@ -8,7 +8,7 @@
 
 ABassWeapon::ABassWeapon()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ABassWeapon::PostInitializeComponents()
@@ -39,7 +39,7 @@ void ABassWeapon::OnTimelineMarker(FString Name, int32 Position)
 void ABassWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	FmodAudioComp->SetParameter(FName(TEXT("Base Level")), 0);
+	FmodAudioComp->SetParameter(FName(TEXT("Level")), 0);
 }
 
 void ABassWeapon::Tick(float DeltaTime)
@@ -74,6 +74,6 @@ void ABassWeapon::Upgrade_Implementation()
 	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
 	Radius =Radius + (Radius * LevelUp.RangeUp);
 	Level += 1;
-	FmodAudioComp->SetParameter(FName(TEXT("Bass Level")), Level);
+	FmodAudioComp->SetParameter(FName(TEXT("Level")), Level);
 }
 

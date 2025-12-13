@@ -24,6 +24,24 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Audio")
 	UFMODAudioComponent* FmodAudioComp;
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RotationSafeDegree = 45.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RotateSpeed = 100.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RotateRadius = 200.0f;
+
+	UPROPERTY(Transient)
+	float RotationTime;
+
+	UPROPERTY(Transient)
+	FQuat RandomRotation;
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 	int32 Level = 0;
@@ -60,4 +78,5 @@ public:
 
 	void SetPaused(bool Paused) const;
 	void SetEventPercentage(float Percentage);
+	void UpdateRotationAroundCharacter(float DeltaTime);
 };

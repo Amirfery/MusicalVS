@@ -22,6 +22,9 @@ AWeapnSystem::AWeapnSystem()
 	FmodAudioComp->SetupAttachment(RootComponent);
 	FmodAudioComp->bAutoActivate = false;
 	FmodAudioComp->bEnableTimelineCallbacks = true;
+
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMesh->SetupAttachment(RootComponent);
 }
 
 void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
@@ -46,12 +49,19 @@ void AWeapnSystem::BeginPlay()
 	FmodAudioComp->SetEvent(AttackData->SoundEvent);
 	FmodAudioComp->OnTimelineMarker.AddDynamic(this, &AWeapnSystem::OnTimelineMarker);
 	FmodAudioComp->Play();
+
+	RandomRotation = FQuat::MakeFromEuler(FVector(
+		FMath::RandBool() ? FMath::RandRange(-RotationSafeDegree, RotationSafeDegree) : FMath::RandRange(180 - RotationSafeDegree, 180 + RotationSafeDegree),
+		FMath::RandBool() ? FMath::RandRange(-RotationSafeDegree, RotationSafeDegree) : FMath::RandRange(180 - RotationSafeDegree, 180 + RotationSafeDegree),
+		FMath::RandRange(0.0f, 360.0f)));
+	RotationTime = 0;
 }
 
 // Called every frame
 void AWeapnSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateRotationAroundCharacter(DeltaTime);
 	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, false, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
 }
 
@@ -68,6 +78,14 @@ void AWeapnSystem::SetPaused(bool Paused) const
 void AWeapnSystem::SetEventPercentage(float Percentage)
 {
 	FmodAudioComp->SetTimelinePosition(FmodAudioComp->GetLength() * Percentage);
+}
+
+void AWeapnSystem::UpdateRotationAroundCharacter(float DeltaTime)
+{
+	RotationTime += DeltaTime;
+	float Angle = RotationTime * RotateSpeed;
+	FVector Dir = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
+	SetActorLocation(RandomRotation.RotateVector(Dir * RotateRadius) + Character->GetActorLocation() + FVector(0.0f, 0.0f, 160.0f));
 }
 
 void AWeapnSystem::Upgrade_Implementation()

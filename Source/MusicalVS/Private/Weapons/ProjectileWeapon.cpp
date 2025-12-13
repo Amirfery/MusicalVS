@@ -7,6 +7,7 @@
 #include "PoolSystem.h"
 #include "DataAssets/AttackData.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Systems/CharacterSystem.h"
 #include "Weapons/Projectile.h"
 
 #define ECC_Target ECC_GameTraceChannel2
@@ -27,7 +28,7 @@ void AProjectileWeapon::BeginPlay()
 	EffectTime = AttackData->BaseEffectTime;
 	ProjectileSpeed = AttackData->ProjectileSpeed;
 
-	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
+	FString Marker = "Level";
 	FmodAudioComp->SetParameter(FName(Marker), 0);
 
 	FString Marker2 = AttackData->AttackMarkers[0].ToString();
@@ -41,7 +42,7 @@ void AProjectileWeapon::SpawnProjectileAtEnemy(const AActor* TargetEnemy) const
 	APoolItem* Item = APoolSystem::GetInstance()->PoolInstances[PoolId]->GetNewItem();
 	if (!Item) return;
 
-	FVector SpawnLoc = GetActorLocation() + FVector(0, 0, 50.f);
+	FVector SpawnLoc = Character->GetActorLocation() + FVector(0, 0, 50.f);
 	Item->SetActorLocation(SpawnLoc);
 	AProjectile* Projectile = Cast<AProjectile>(Item);
 	if (!Projectile) return;
@@ -64,7 +65,7 @@ void AProjectileWeapon::Upgrade_Implementation()
 	SearchRadius =SearchRadius + (SearchRadius * LevelUp.RangeUp);
 	ProjectileSpeed =ProjectileSpeed + (ProjectileSpeed * LevelUp.RangeUp);
 	Level += 1;
-	FString Marker = AttackData->AttackMarkers[0].ToString() + " Level";
+	FString Marker = "Level";
 	FmodAudioComp->SetParameter(FName(Marker), Level);
 
 	FString Marker2 = AttackData->AttackMarkers[0].ToString();
@@ -75,7 +76,7 @@ void AProjectileWeapon::Upgrade_Implementation()
 void AProjectileWeapon::Attack_Implementation()
 {
 	Super::Attack_Implementation();
-	const FVector PlayerLoc = GetActorLocation();
+	const FVector PlayerLoc = Character->GetActorLocation();
 
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(SearchRadius);

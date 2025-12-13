@@ -31,7 +31,7 @@ void AAoeWeapon::PostInitializeComponents()
 void AAoeWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	FmodAudioComp->SetParameter(FName(TEXT("Drums Level")), 0);
+	FmodAudioComp->SetParameter(FName(TEXT("Level")), 0);
 }
 
 void AAoeWeapon::OnEnemyEnterRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -70,7 +70,7 @@ void AAoeWeapon::Upgrade_Implementation()
 	Radius =Radius + (Radius * LevelUp.RangeUp);
 	Level += 1;
 	// FmodAudioComp->ParameterCache.Add(FName(TEXT("Drums Level")), Level);
-	FmodAudioComp->SetParameter(FName(TEXT("Drums Level")), Level);
+	FmodAudioComp->SetParameter(FName(TEXT("Level")), Level);
 }
 
 void AAoeWeapon::Attack_Implementation()
@@ -89,7 +89,7 @@ void AAoeWeapon::Attack_Implementation()
 			continue;
 		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(Enemy->GetRootComponent()))
 		{
-			FVector Dir = (Enemy->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+			FVector Dir = (Enemy->GetActorLocation() - Character->GetActorLocation()).GetSafeNormal();
 			Dir.Z = 0.f;
 			Dir.Normalize();
 			Prim->AddImpulse(Dir * EffectTime, NAME_None, true);
