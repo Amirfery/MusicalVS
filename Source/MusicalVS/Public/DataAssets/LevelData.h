@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "LevelData.generated.h"
 
+class UFMODEvent;
 class UEnemyData;
 
 USTRUCT(BlueprintType)
@@ -53,6 +54,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 MaxLevelTimeInSeconds = 600;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> WaveStartSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> EnemySound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> BossSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FSpawnPhase> SpawnPhases;

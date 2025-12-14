@@ -16,6 +16,10 @@ class MUSICALVS_API ULevelManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
+private:
+	UPROPERTY(Transient)
+	bool bPlayWaveSound;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<ULevelData> LevelData;

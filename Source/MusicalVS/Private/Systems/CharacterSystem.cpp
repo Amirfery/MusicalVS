@@ -3,6 +3,7 @@
 
 #include "Systems/CharacterSystem.h"
 #include "GameManager.h"
+#include "LevelManager.h"
 #include "DataAssets/AttackData.h"
 #include "GameFramework/Character.h"
 #include "Infrastructure/GenericStructs.h"
@@ -148,6 +149,13 @@ void ACharacterSystem::UpgradeWeapon(FName Id)
 	{
 		Weapons[Id]->Upgrade();
 	}
+}
+
+void ACharacterSystem::SetStartWeapon()
+{
+	TObjectPtr<AActor> Actor = GetWorld()->SpawnActor(Cast<UGameManager>(GetGameInstance())->StartCharacter);
+	Actor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	AddWeapon(static_cast<AWeapnSystem*>(Actor));
 }
 
 void ACharacterSystem::Init()

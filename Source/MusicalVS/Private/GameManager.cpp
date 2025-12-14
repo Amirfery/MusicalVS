@@ -5,9 +5,10 @@
 
 #include "UiManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Systems/CharacterSystem.h"
 
 void UGameManager::StartGame() const
 {
-	GetSubsystem<UUiManager>()->ToggleMainMenu();
+	GetSubsystem<UUiManager>()->ToggleCharacterSelection();
 	UGameplayStatics::OpenLevel(this, "Level");
 }

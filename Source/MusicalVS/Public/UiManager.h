@@ -19,11 +19,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<UUserWidget> GameOverWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<UUserWidget> CharacterSelectionWidgetClass;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UUserWidget> MainMenuWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UUserWidget> GameOverWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UUserWidget> CharacterSelectionWidget;
 	
 	
 public:
@@ -34,6 +40,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleGameOver();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleCharacterSelection();
 
 	UFUNCTION(BlueprintCallable)
 	void ShowWidget(UUserWidget* Widget) const;

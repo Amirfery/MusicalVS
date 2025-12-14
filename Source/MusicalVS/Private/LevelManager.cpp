@@ -5,8 +5,12 @@
 
 #include "GameManager.h"
 #include "TickSubsystem.h"
+#include "Components/CapsuleComponent.h"
 #include "DataAssets/LevelData.h"
 #include "Infrastructure/GenericStructs.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Systems/CharacterSystem.h"
+#include "Systems/WeapnSystem.h"
 
 
 class UGameManager;
@@ -15,6 +19,7 @@ void ULevelManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	CurrentPhase = -1;
+	bPlayWaveSound = false;
 }
 
 void ULevelManager::OnWorldBeginPlay(UWorld& InWorld)
@@ -26,12 +31,39 @@ void ULevelManager::OnWorldBeginPlay(UWorld& InWorld)
 
 void ULevelManager::CheckLevelPhase(int32 CurrentTime)
 {
+	if (bPlayWaveSound)
+	{
+		float per = ACharacterSystem::GetCharacterInstance()->MainWeapon->GetEventPercentage();
+		UKismetSystemLibrary::PrintString(
+		this,
+		FString::Printf(TEXT("Percentage: %f"), per),
+		true,
+		true,
+		FLinearColor::Yellow,
+		1.0f
+		);
+		if (per < 0.1f)
+		{
+			UFMODBlueprintStatics::PlayEventAttached(LevelData->WaveStartSound, ACharacterSystem::GetCharacterInstance()->GetCapsuleComponent(), FName(TEXT("Wave Sound")), FVector::ZeroVector, EAttachLocation::Type::SnapToTarget,
+				false, true, true);
+			bPlayWaveSound = false;
+		}
+	}
 	if (CurrentPhase == LevelData->SpawnPhases.Num() - 1)
 		return;
-	
+	UKismetSystemLibrary::PrintString(
+		this,
+		FString::Printf(TEXT("CurrentTime: %d"), CurrentTime),
+		true,
+		true,
+		FLinearColor::Yellow,
+		1.0f
+	);
 	if (CurrentTime >= LevelData->SpawnPhases[CurrentPhase + 1].StartTimeInSeconds)
 	{
 		CurrentPhase += 1;
 		OnPhaseChanged.Broadcast(LevelData->SpawnPhases[CurrentPhase]);
+		if (CurrentPhase > 0)
+			bPlayWaveSound = true;
 	}
 }

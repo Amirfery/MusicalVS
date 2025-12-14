@@ -79,6 +79,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpgradeWeapon(FName Id);
 
+	UFUNCTION(BlueprintCallable)
+	void SetStartWeapon();
+
 private:
 	UFUNCTION(BlueprintCallable)
 	void Init();

@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameManager.generated.h"
 
+class AWeapnSystem;
 /**
  * 
  */
@@ -20,7 +21,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UDataTable> LevelsDataTable;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AWeapnSystem> StartCharacter;
 public:
 	
 	UFUNCTION(BlueprintCallable)
