@@ -34,6 +34,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, BlueprintAssignable)
 	FLevelTimerDelegate LevelTimerDelegate;
 
+	UPROPERTY(BlueprintReadOnly)
+	FTickSubsystemDelegate DefaultTickDelegate;
+
 	UPROPERTY(Transient)
 	bool bEnemyCanTick;
 

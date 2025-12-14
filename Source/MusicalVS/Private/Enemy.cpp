@@ -91,11 +91,11 @@ void AEnemy::Initialize(UEnemyData* NewEnemyData)
 	EnemyData = NewEnemyData;
 	HealthComponent->MaxHealth = EnemyData->Hp;
 	HealthComponent->CurrentHealth = EnemyData->Hp;
-	Mesh->SetStaticMesh(EnemyData->SkeletalMesh);
-	DynMat = Mesh->CreateAndSetMaterialInstanceDynamicFromMaterial(0, NewEnemyData->Material);
-	DynMat->SetScalarParameterValue(FName("TimeOffset"), FMath::RandRange(1, 100));
-	float temp;
-	DynMat->GetScalarParameterValue(FName("TimeOffset"), temp);
+	// Mesh->SetStaticMesh(EnemyData->SkeletalMesh);
+	// DynMat = Mesh->CreateAndSetMaterialInstanceDynamicFromMaterial(0, NewEnemyData->Material);
+	// DynMat->SetScalarParameterValue(FName("TimeOffset"), FMath::RandRange(1, 100));
+	// float temp;
+	// DynMat->GetScalarParameterValue(FName("TimeOffset"), temp);
 	SetActorScale3D(EnemyData->Scale);
 	Speed = EnemyData->Speed;
 	Damage = EnemyData->Damage;

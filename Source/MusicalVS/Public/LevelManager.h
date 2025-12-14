@@ -39,6 +39,6 @@ public:
 	UFUNCTION()
 	void CheckLevelPhase(int32 CurrentTime);
 
-	
-	
+	UFUNCTION()
+	void Tick(float DeltaTime);
 };

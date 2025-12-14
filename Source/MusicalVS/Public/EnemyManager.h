@@ -43,6 +43,11 @@ public:
 	UFUNCTION()
 	void SetNewPhaseData(FSpawnPhase NewPhase);
 
+	void SpawnSwarm(FSpawnPhase SpawnPhase);
+	FVector GetRandomPointAroundPlayer(const FVector& PlayerLocation, float MinDistance, float MaxDistance);
+	void RelocateInstantEnemies(AEnemy* Enemy, const FVector& Center, float InnerRadius, float OuterRadius);
+	void SpawnRandomInstant(FSpawnPhase SpawnPhase);
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 	FName EnemyPoolId;
@@ -68,8 +73,8 @@ public:
 private:
 	bool bIsInCooldown;
 	FTimerHandle CooldownTimer;
-	UPROPERTY(Transient)
-	TObjectPtr<APoolManager> EnemyPool;
+
+	bool bShouldSpawn = false;
 
 	static TObjectPtr<AEnemyManager> Instance;
 

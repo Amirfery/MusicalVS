@@ -27,43 +27,34 @@ void ULevelManager::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 	LevelData = Cast<UGameManager>(GetWorld()->GetGameInstance())->LevelsDataTable->FindRow<FLevelRow>(FName("Level0"),TEXT("Level lookup"))->LevelData;
 	GetWorld()->GetSubsystem<UTickSubsystem>()->LevelTimerDelegate.AddDynamic(this, &ULevelManager::CheckLevelPhase);
+	GetWorld()->GetSubsystem<UTickSubsystem>()->DefaultTickDelegate.AddDynamic(this, &ULevelManager::Tick);
 }
 
 void ULevelManager::CheckLevelPhase(int32 CurrentTime)
 {
+	if (CurrentPhase == LevelData->SpawnPhases.Num() - 1)
+		return;
+
+	if (CurrentTime >= LevelData->SpawnPhases[CurrentPhase + 1].StartTimeInSeconds)
+	{
+		CurrentPhase += 1;
+		OnPhaseChanged.Broadcast(LevelData->SpawnPhases[CurrentPhase]);
+		if (CurrentPhase > 0 && !LevelData->SpawnPhases[CurrentPhase].bIsInstant)
+			bPlayWaveSound = true;
+	}
+}
+
+void ULevelManager::Tick(float DeltaTime)
+{
 	if (bPlayWaveSound)
 	{
 		float per = ACharacterSystem::GetCharacterInstance()->MainWeapon->GetEventPercentage();
-		UKismetSystemLibrary::PrintString(
-		this,
-		FString::Printf(TEXT("Percentage: %f"), per),
-		true,
-		true,
-		FLinearColor::Yellow,
-		1.0f
-		);
+
 		if (per < 0.1f)
 		{
 			UFMODBlueprintStatics::PlayEventAttached(LevelData->WaveStartSound, ACharacterSystem::GetCharacterInstance()->GetCapsuleComponent(), FName(TEXT("Wave Sound")), FVector::ZeroVector, EAttachLocation::Type::SnapToTarget,
 				false, true, true);
 			bPlayWaveSound = false;
 		}
-	}
-	if (CurrentPhase == LevelData->SpawnPhases.Num() - 1)
-		return;
-	UKismetSystemLibrary::PrintString(
-		this,
-		FString::Printf(TEXT("CurrentTime: %d"), CurrentTime),
-		true,
-		true,
-		FLinearColor::Yellow,
-		1.0f
-	);
-	if (CurrentTime >= LevelData->SpawnPhases[CurrentPhase + 1].StartTimeInSeconds)
-	{
-		CurrentPhase += 1;
-		OnPhaseChanged.Broadcast(LevelData->SpawnPhases[CurrentPhase]);
-		if (CurrentPhase > 0)
-			bPlayWaveSound = true;
 	}
 }

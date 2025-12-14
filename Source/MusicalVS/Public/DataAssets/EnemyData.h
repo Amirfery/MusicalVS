@@ -17,6 +17,9 @@ class MUSICALVS_API UEnemyData : public UDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName PoolId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMesh> SkeletalMesh;
@@ -38,5 +41,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector Scale;
-	
 };

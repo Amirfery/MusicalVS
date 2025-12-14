@@ -18,6 +18,7 @@ void UTickSubsystem::Deinitialize()
 
 void UTickSubsystem::Tick(float DeltaTime)
 {
+	DefaultTickDelegate.Broadcast(DeltaTime);
 	if (bEnemyCanTick)
 		EnemyTickDelegate.Broadcast(DeltaTime);
 
