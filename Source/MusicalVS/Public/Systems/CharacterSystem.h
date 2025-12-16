@@ -11,6 +11,7 @@ class AWeapnSystem;
 class APoolManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelUp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLoopRestarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneXPAdded, float, Amount);
 
 UCLASS()
@@ -35,6 +36,9 @@ private:
 	UPROPERTY(Transient)
 	bool bIsGamePaused;
 
+	UPROPERTY(Transient)
+	float PrevTickEventPercentage;
+
 public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 XP;
@@ -45,6 +49,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<AWeapnSystem> MainWeapon;
+
+	UPROPERTY(BlueprintAssignable)
+	FLoopRestarted OnLoopRestarted;
 
 public:
 	// Sets default values for this character's properties

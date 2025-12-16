@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
+class ACharacterSystem;
 class UHealthComponent;
 class UEnemyData;
 class UCapsuleComponent;
@@ -33,6 +34,9 @@ public:
 
 	UFUNCTION()
 	void TickEnemy(float DeltaTime);
+
+	UFUNCTION()
+	void IncreaseLoopCounter();
 	
 protected:
 
@@ -48,7 +52,7 @@ public:
 	float Damage;
 	
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ACharacter> PlayerCharacter;
+	TObjectPtr<ACharacterSystem> PlayerCharacter;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName XpPoolSystemName;
@@ -76,4 +80,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsAlive;
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 LoopCounter;
 };

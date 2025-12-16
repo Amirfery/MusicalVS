@@ -6,9 +6,14 @@
 #include "Engine/DataAsset.h"
 #include "EnemyData.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	Normal	UMETA(DisplayName = "Normal"),
+	Boss	UMETA(DisplayName = "Boss"),
+};
+
+
 UCLASS(BlueprintType)
 class MUSICALVS_API UEnemyData : public UDataAsset
 {
@@ -29,6 +34,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInterface> Material;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EEnemyType EnemyType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Speed;

@@ -33,6 +33,8 @@ void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 	// {
 	// 	
 	// }
+	if (!bShouldAttack)
+		return;
 	FString Marker = AttackData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level);
 	if (Name.Contains(Marker, ESearchCase::IgnoreCase))
 	{
@@ -55,6 +57,7 @@ void AWeapnSystem::BeginPlay()
 		FMath::RandBool() ? FMath::RandRange(-RotationSafeDegree, RotationSafeDegree) : FMath::RandRange(180 - RotationSafeDegree, 180 + RotationSafeDegree),
 		FMath::RandRange(0.0f, 360.0f)));
 	RotationTime = 0;
+	bShouldAttack = true;
 }
 
 // Called every frame
@@ -70,9 +73,10 @@ float AWeapnSystem::GetEventPercentage()
 	return static_cast<float>(FmodAudioComp->GetTimelinePosition()) / FmodAudioComp->GetLength(); 
 }
 
-void AWeapnSystem::SetPaused(bool Paused) const
+void AWeapnSystem::SetPaused(const bool Paused)
 {
-	FmodAudioComp->SetPaused(Paused);
+	bShouldAttack = !Paused;
+	// FmodAudioComp->SetPaused(Paused);
 }
 
 void AWeapnSystem::SetEventPercentage(float Percentage)

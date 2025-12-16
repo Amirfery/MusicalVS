@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(Transient)
 	FQuat RandomRotation;
 
+	UPROPERTY(Transient)
+	bool bShouldAttack;
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 	int32 Level = 0;
@@ -53,6 +56,7 @@ public:
 	FName Id;
 
 	bool bShouldSync;
+	
 public:
 	// Sets default values for this actor's properties
 	AWeapnSystem();
@@ -74,9 +78,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void Attack();
 
+	UFUNCTION(BlueprintCallable)
 	float GetEventPercentage();
 
-	void SetPaused(bool Paused) const;
+	void SetPaused(bool Paused);
 	void SetEventPercentage(float Percentage);
 	void UpdateRotationAroundCharacter(float DeltaTime);
 };
