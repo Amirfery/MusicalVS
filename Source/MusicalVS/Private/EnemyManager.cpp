@@ -8,8 +8,7 @@
 #include "PoolManager.h"
 #include "PoolSystem.h"
 #include "TickSubsystem.h"
-#include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
+#include "DataAssets/EnemyData.h"
 #include "Systems/CharacterSystem.h"
 
 TObjectPtr<AEnemyManager> AEnemyManager::Instance = nullptr;
@@ -22,8 +21,8 @@ AEnemyManager::AEnemyManager()
 void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
-	EnemyPool = APoolSystem::GetInstance()->PoolInstances[EnemyPoolId];
 	CurrentAliveEnemies = 0;
+	bShouldSpawn = false;
 	GetWorld()->GetSubsystem<ULevelManager>()->OnPhaseChanged.AddDynamic(this, &AEnemyManager::SetNewPhaseData);
 }
 
@@ -34,25 +33,29 @@ void AEnemyManager::Tick(float DeltaSeconds)
 		return;
 	if (bIsInCooldown)
 		return;
-	
-	APoolItem* TempEnemy = EnemyPool->GetNewItem();
-	TempEnemy->SetFloatValues({MaxDistance});
-	AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
+	if (!bShouldSpawn)
+		return;
 
 	float RandomFloat = FMath::RandRange(0.0f, MaxChance);
 	
 	float Offset = 0.0f;
+	TObjectPtr<UEnemyData> ChosenEnemy;
 	for (FEnemySpawnInfo Element : EnemyTypes)
 	{
 		if (RandomFloat <= Element.SpawnChance + Offset)
 		{
-			Enemy->Initialize(Element.EnemyDataAsset);
+			ChosenEnemy = Element.EnemyDataAsset;
 			break;
 		}
 			Offset += Element.SpawnChance;
 	}
 	
+	APoolItem* TempEnemy = APoolSystem::GetInstance()->PoolInstances[ChosenEnemy->PoolId]->GetNewItem();
+	TempEnemy->SetFloatValues({MaxDistance});
+	AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
+	Enemy->Initialize(ChosenEnemy);
 	RelocateEnemy(TempEnemy);
+	
 	bIsInCooldown = true;
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimer,
 	                                       FTimerDelegate::CreateLambda([this]()
@@ -83,9 +86,8 @@ void AEnemyManager::RelocateEnemy(APoolItem* Enemy) const
 	Enemy->GetActorBounds(true, BoxCenter, BoxExtent);
 	float Radius = FMath::Sqrt(FMath::RandRange(FMath::Pow(InnerCircleRadius, 2), FMath::Pow(OuterCircleRadius, 2)));
 	float Angle = FMath::RandRange(0.0f, 2 * PI);
-	ACharacter* Player = ACharacterSystem::GetCharacterInstance();
 	Enemy->SetActorLocation(
-		Player->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, BoxExtent.Z * 2));
+		ACharacterSystem::GetCharacterInstance()->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, BoxExtent.Z));
 }
 
 void AEnemyManager::EnemyDied(AEnemy* Enemy)
@@ -116,6 +118,21 @@ void AEnemyManager::FreezeEnemies()
 
 void AEnemyManager::SetNewPhaseData(FSpawnPhase NewPhase)
 {
+	bShouldSpawn = true;
+	if (NewPhase.bIsInstant)
+	{
+		switch (NewPhase.InstantType)
+		{
+		case EInstantType::Swarm:
+			SpawnSwarm(NewPhase);
+			return;
+		case EInstantType::Random:
+			SpawnRandomInstant(NewPhase);
+			return;
+		default:
+			return;
+		}
+	}
 	PhaseData = NewPhase;
 	EnemySpawnInterval = PhaseData.SpawnRate;
 	EnemyTypes.Empty();
@@ -124,5 +141,72 @@ void AEnemyManager::SetNewPhaseData(FSpawnPhase NewPhase)
 	for (FEnemySpawnInfo EnemySpawnInfo : PhaseData.EnemiesSpawnInfo)
 	{
 		MaxChance += EnemySpawnInfo.SpawnChance;
+	}
+}
+
+void AEnemyManager::SpawnSwarm(FSpawnPhase SpawnPhase)
+{
+	for (FEnemySpawnInfo EnemySpawnInfo : SpawnPhase.EnemiesSpawnInfo)
+	{
+		const FVector ClusterCenter = GetRandomPointAroundPlayer(ACharacterSystem::GetCharacterInstance()->GetActorLocation(), InnerCircleRadius, OuterCircleRadius);
+		for (int i = 0; i < EnemySpawnInfo.SpawnChance; i++)
+		{
+			APoolItem* TempEnemy = APoolSystem::GetInstance()->PoolInstances[EnemySpawnInfo.EnemyDataAsset->PoolId]->GetNewItem();
+			TempEnemy->SetFloatValues({MaxDistance});
+			AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
+			Enemy->Initialize(EnemySpawnInfo.EnemyDataAsset);
+			Enemy->Speed *= 10;
+			RelocateInstantEnemies(Enemy, ClusterCenter, 0.f, 1000.f);
+			CurrentAliveEnemies++;
+			AliveEnemies.Add(Enemy);
+		}
+	}
+}
+
+FVector AEnemyManager::GetRandomPointAroundPlayer(const FVector& PlayerLocation, float MinDis, float MaxDis)
+{
+	const float Angle = FMath::RandRange(0.f, 2.f * PI);
+	const float Radius = FMath::Sqrt(
+		FMath::RandRange(FMath::Square(MinDis), FMath::Square(MaxDis))
+	);
+
+	return PlayerLocation + FVector(
+		FMath::Cos(Angle) * Radius,
+		FMath::Sin(Angle) * Radius,
+		0.f
+	);
+}
+
+void AEnemyManager::RelocateInstantEnemies(AEnemy* Enemy, const FVector& Center, float InnerRadius, float OuterRadius)
+{
+	FVector BoxCenter, BoxExtent;
+	Enemy->GetActorBounds(true, BoxCenter, BoxExtent);
+
+	const float Angle = FMath::RandRange(0.f, 2.f * PI);
+	const float Radius = FMath::RandRange(InnerRadius, OuterRadius);
+
+	const FVector Offset(
+		FMath::Cos(Angle) * Radius,
+		FMath::Sin(Angle) * Radius,
+		BoxExtent.Z
+	);
+
+	Enemy->SetActorLocation(Center + Offset, false, nullptr, ETeleportType::TeleportPhysics);
+}
+
+void AEnemyManager::SpawnRandomInstant(FSpawnPhase SpawnPhase)
+{
+	for (FEnemySpawnInfo EnemySpawnInfo : SpawnPhase.EnemiesSpawnInfo)
+	{
+		for (int i = 0; i < EnemySpawnInfo.SpawnChance; i++)
+		{
+			APoolItem* TempEnemy = APoolSystem::GetInstance()->PoolInstances[EnemySpawnInfo.EnemyDataAsset->PoolId]->GetNewItem();
+			TempEnemy->SetFloatValues({MaxDistance});
+			AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
+			Enemy->Initialize(EnemySpawnInfo.EnemyDataAsset);
+			RelocateEnemy(Enemy);
+			CurrentAliveEnemies++;
+			AliveEnemies.Add(Enemy);
+		}
 	}
 }

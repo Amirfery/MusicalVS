@@ -6,7 +6,15 @@
 #include "Engine/DataAsset.h"
 #include "LevelData.generated.h"
 
+class UFMODEvent;
 class UEnemyData;
+
+UENUM(BlueprintType)
+enum class EInstantType : uint8
+{
+	Swarm        UMETA(DisplayName = "Swarm"),
+	Random       UMETA(DisplayName = "Random Instant")
+};
 
 USTRUCT(BlueprintType)
 struct FEnemySpawnInfo
@@ -31,6 +39,9 @@ struct FSpawnPhase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsInstant = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "bIsInstant", EditConditionHides))
+	EInstantType InstantType = EInstantType::Swarm;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 MaxEnemies = 500;
 
@@ -53,6 +64,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 MaxLevelTimeInSeconds = 600;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> WaveStartSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> EnemySound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> BossSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FSpawnPhase> SpawnPhases;

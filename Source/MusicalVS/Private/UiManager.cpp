@@ -47,6 +47,21 @@ void UUiManager::ToggleGameOver()
 	}
 }
 
+void UUiManager::ToggleCharacterSelection()
+{
+	if (!CharacterSelectionWidget)
+	{
+		CharacterSelectionWidget = CreateWidget<UUserWidget>(GetWorld(), CharacterSelectionWidgetClass);
+		ToggleMainMenu();
+		ShowWidget(CharacterSelectionWidget);
+	}
+	else
+	{
+		HideWidget(CharacterSelectionWidget);
+		CharacterSelectionWidget = nullptr;
+	}
+}
+
 void UUiManager::ShowWidget(UUserWidget* Widget) const
 {
 	Widget->AddToViewport();
