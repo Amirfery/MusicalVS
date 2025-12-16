@@ -85,7 +85,7 @@ void AEnemyManager::RelocateEnemy(APoolItem* Enemy) const
 	float Angle = FMath::RandRange(0.0f, 2 * PI);
 	ACharacter* Player = ACharacterSystem::GetCharacterInstance();
 	Enemy->SetActorLocation(
-		Player->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, BoxExtent.Z));
+		Player->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, BoxExtent.Z * 2));
 }
 
 void AEnemyManager::EnemyDied(AEnemy* Enemy)
