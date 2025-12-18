@@ -7,6 +7,7 @@
 #include "DataAssets/AttackData.h"
 #include "GameFramework/Character.h"
 #include "Infrastructure/GenericStructs.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/WeapnSystem.h"
 
 class UGameManager;
@@ -27,6 +28,7 @@ void ACharacterSystem::BeginPlay()
 	Level = 0;
 	NeededXpToLevelUp = 10;
 	XP = 0;
+	PrevTickEventPercentage = 0.0f;
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, [this, ]&ACharacterSystem::AoeAttack, 0.5f, true);
 }
@@ -35,6 +37,20 @@ void ACharacterSystem::BeginPlay()
 void ACharacterSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	const float CurrentTickEventPercentage = MainWeapon->GetEventPercentage();
+	UKismetSystemLibrary::PrintString(
+		GetWorld(),
+		FString::Printf(TEXT("Percentage: %.2f"), CurrentTickEventPercentage),
+		true,
+		true,   // Print to log
+		FLinearColor::Green,
+		2.0f    // Duration
+	);
+	if (CurrentTickEventPercentage < PrevTickEventPercentage)
+	{
+		OnLoopRestarted.Broadcast();
+	}
+	PrevTickEventPercentage = CurrentTickEventPercentage;
 }
 
 // Called to bind functionality to input

@@ -12,6 +12,7 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Systems/CharacterSystem.h"
 
 
 // Sets default values
@@ -24,7 +25,7 @@ AEnemy::AEnemy()
 void AEnemy::Init_Implementation(APoolManager* PoolManager)
 {
 	Super::Init_Implementation(PoolManager);
-	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	PlayerCharacter = Cast<ACharacterSystem>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 // Called when the game starts or when spawned
@@ -103,6 +104,8 @@ void AEnemy::Initialize(UEnemyData* NewEnemyData)
 	Mesh->GetLocalBounds(Min, Max);
 	FVector  Bounds = (Max - Min) * 0.5;
 	CapsuleComponent->SetCapsuleSize(Bounds.X, Bounds.Z);
+	PlayerCharacter->OnLoopRestarted.AddDynamic(this, &AEnemy::IncreaseLoopCounter);
+	LoopCounter = 0;
 }
 
 void AEnemy::Freeze()
@@ -127,5 +130,10 @@ void AEnemy::SetFloatValues_Implementation(const TArray<float>& FloatValues)
 void AEnemy::TickEnemy(float DeltaTime)
 {
 	Tick(DeltaTime);
+}
+
+void AEnemy::IncreaseLoopCounter()
+{
+	LoopCounter++;
 }
 
