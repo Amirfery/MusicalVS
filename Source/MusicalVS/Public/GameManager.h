@@ -20,6 +20,9 @@ public:
 	TObjectPtr<UDataTable> WeaponsDataTable;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UDataTable> BlessingsDataTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UDataTable> LevelsDataTable;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

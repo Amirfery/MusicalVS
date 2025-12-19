@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "Infrastructure/GenericStructs.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Systems/BlessingSystem.h"
 #include "Systems/WeapnSystem.h"
 
 class UGameManager;
@@ -142,6 +143,52 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
 	{
 		FWeapon* RowHandle = Table->FindRow<FWeapon>(RowName, TEXT("Get a row from weapon data table."));
 		Upgrades.Add(FWeaponToUpgrade(RowName, RowHandle->DisplayName, RowHandle->Description, RowHandle->Icon));
+	}
+	
+	if (Upgrades.Num() > 0)
+		SetPaused(true);
+
+	return Upgrades;
+}
+
+TArray<FBlessingToUpgrade> ACharacterSystem::GetBlessingUpgrades()
+{
+	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
+
+	UDataTable* Table = GM->BlessingsDataTable;
+	
+	if (!Table)
+		return TArray<FBlessingToUpgrade>();
+	
+	TArray<FName> AllRows = Table->GetRowNames();
+	TArray<FName> ValidRows;
+	for (FName Row : AllRows)
+	{
+		if (!Blessings.Contains(Row))
+		{
+			ValidRows.Add(Row);
+		}
+	}
+	TArray<FName> RandomRows;
+
+	if (ValidRows.Num() > 3)
+	{
+		ValidRows.Sort([](const FName& A, const FName& B)
+		{
+			return FMath::RandRange(0,1) == 0;
+		});
+		RandomRows.Append(ValidRows.GetData(), 3);
+	}
+	else
+	{
+		RandomRows = ValidRows;
+	}
+
+	TArray<FBlessingToUpgrade> Upgrades;
+	for (FName RowName : RandomRows)
+	{
+		FBlessingWeaponData* RowHandle = Table->FindRow<FBlessingWeaponData>(RowName, TEXT("Get a row from blessings data table."));
+		Upgrades.Add(FBlessingToUpgrade(RowName, RowHandle->DisplayName, RowHandle->Description, RowHandle->Icon));
 	}
 	
 	if (Upgrades.Num() > 0)
