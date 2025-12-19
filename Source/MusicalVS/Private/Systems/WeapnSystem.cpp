@@ -51,7 +51,6 @@ void AWeapnSystem::BeginPlay()
 	FmodAudioComp->SetEvent(AttackData->SoundEvent);
 	FmodAudioComp->OnTimelineMarker.AddDynamic(this, &AWeapnSystem::OnTimelineMarker);
 	FmodAudioComp->Play();
-
 	RandomRotation = FQuat::MakeFromEuler(FVector(
 		FMath::RandBool() ? FMath::RandRange(-RotationSafeDegree, RotationSafeDegree) : FMath::RandRange(180 - RotationSafeDegree, 180 + RotationSafeDegree),
 		FMath::RandBool() ? FMath::RandRange(-RotationSafeDegree, RotationSafeDegree) : FMath::RandRange(180 - RotationSafeDegree, 180 + RotationSafeDegree),
@@ -89,7 +88,11 @@ void AWeapnSystem::UpdateRotationAroundCharacter(float DeltaTime)
 	RotationTime += DeltaTime;
 	float Angle = RotationTime * RotateSpeed;
 	FVector Dir = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
-	SetActorLocation(RandomRotation.RotateVector(Dir * RotateRadius) + Character->GetActorLocation() + FVector(0.0f, 0.0f, 160.0f));
+	FVector ResultLocation = RandomRotation.RotateVector(Dir * RotateRadius) + Character->GetActorLocation() + FVector(0.0f, 0.0f, 160.0f);
+	FVector MoveDirection = (RandomRotation.RotateVector(Dir * RotateRadius) + FVector(0.0f, 0.0f, 160.0f) - PrevLocationInOrbit).GetSafeNormal();
+	PrevLocationInOrbit = RandomRotation.RotateVector(Dir * RotateRadius) + FVector(0.0f, 0.0f, 160.0f);
+	SetActorRotation(MoveDirection.Rotation());
+	SetActorLocation(ResultLocation);
 }
 
 void AWeapnSystem::Upgrade_Implementation()

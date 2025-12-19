@@ -34,7 +34,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 PoolSize;
 
-	TQueue<APoolItem*> FreeItems;
+	TQueue<TObjectPtr<APoolItem>> FreeItems;
 
 	int32 CurrentFreeItemsCount;
 

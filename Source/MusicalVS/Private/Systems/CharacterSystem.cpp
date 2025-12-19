@@ -38,14 +38,14 @@ void ACharacterSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	const float CurrentTickEventPercentage = MainWeapon->GetEventPercentage();
-	UKismetSystemLibrary::PrintString(
-		GetWorld(),
-		FString::Printf(TEXT("Percentage: %.2f"), CurrentTickEventPercentage),
-		true,
-		true,   // Print to log
-		FLinearColor::Green,
-		2.0f    // Duration
-	);
+	// UKismetSystemLibrary::PrintString(
+	// 	GetWorld(),
+	// 	FString::Printf(TEXT("Percentage: %.2f"), CurrentTickEventPercentage),
+	// 	true,
+	// 	true,   // Print to log
+	// 	FLinearColor::Green,
+	// 	2.0f    // Duration
+	// );
 	if (CurrentTickEventPercentage < PrevTickEventPercentage)
 	{
 		OnLoopRestarted.Broadcast();
@@ -170,7 +170,7 @@ void ACharacterSystem::UpgradeWeapon(FName Id)
 void ACharacterSystem::SetStartWeapon()
 {
 	TObjectPtr<AActor> Actor = GetWorld()->SpawnActor(Cast<UGameManager>(GetGameInstance())->StartCharacter);
-	Actor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	//Actor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 	AddWeapon(static_cast<AWeapnSystem*>(Actor));
 }
 

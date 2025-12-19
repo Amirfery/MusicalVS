@@ -18,14 +18,14 @@ APoolManager::APoolManager()
 
 APoolItem* APoolManager::GetNewItem()
 {
-	APoolItem* Item = nullptr;
+	TObjectPtr<APoolItem> Item = nullptr;
 	if (!FreeItems.IsEmpty())
 	{
 		CurrentFreeItemsCount--;
 		FreeItems.Dequeue(Item);
 	} else
 	{
-		Item = GetWorld()->SpawnActor<APoolItem>(ActorToSpawn, FTransform::Identity);
+		Item = GetWorld()->SpawnActor<APoolItem>(ActorToSpawn, GetActorLocation(), FRotator(0, 0, 0));
 		Item->Init(this);
 	}
 	

@@ -28,16 +28,19 @@ protected:
 	UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	float RotationSafeDegree = 45.0f;
+	float RotationSafeDegree = 30.0f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float RotateSpeed = 100.f;
+	float RotateSpeed = 50.f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float RotateRadius = 200.0f;
 
 	UPROPERTY(Transient)
 	float RotationTime;
+
+	UPROPERTY(Transient)
+	FVector PrevLocationInOrbit;
 
 	UPROPERTY(Transient)
 	FQuat RandomRotation;
