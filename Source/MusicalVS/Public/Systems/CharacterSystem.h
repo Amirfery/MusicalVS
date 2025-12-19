@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Infrastructure/GenericStructs.h"
 #include "CharacterSystem.generated.h"
 
 struct FWeaponToUpgrade;
@@ -24,6 +25,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	TMap<FName, TObjectPtr<AWeapnSystem>> Weapons;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
+	TMap<FName, TObjectPtr<ABlessingSystem>> Blessings;
 
 	FTimerHandle AutoAttackTimer;
 
@@ -79,6 +83,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FWeaponToUpgrade> GetWeaponUpgrades();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FBlessingToUpgrade> GetBlessingUpgrades();
 
 	UFUNCTION(BlueprintCallable)
 	void SetPaused(bool Paused);
