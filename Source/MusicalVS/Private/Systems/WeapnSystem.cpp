@@ -3,6 +3,7 @@
 
 #include "Systems/WeapnSystem.h"
 #include "DataAssets/AttackData.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
 
 
@@ -25,17 +26,23 @@ AWeapnSystem::AWeapnSystem()
 
 void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 {
-	// for ( Element : WeaponData->AttackMarkers)
-	// {
-	// 	
-	// }
 	if (!bShouldAttack)
 		return;
-	FString Marker = AttackData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level);
-	if (Name.Contains(Marker, ESearchCase::IgnoreCase))
-	{
-		Attack();
-	}
+	UKismetSystemLibrary::PrintString(
+		GetWorld(),
+		Name,
+		true,
+		true,   // Print to log
+		FLinearColor::Green,
+		2.0f,    // Duration,
+		FName("aaaasaf")
+	);
+	if (Name.Contains(AttackData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
+		FirstMarkerAttack();
+	else if (Name.Contains(AttackData->AttackMarkers[1].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
+		SecondMarkerAttack();
+	else if (Name.Contains(AttackData->AttackMarkers[2].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
+		ThirdMarkerAttack();
 }
 
 // Called when the game starts or when spawned
@@ -61,6 +68,18 @@ void AWeapnSystem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	UpdateRotationAroundCharacter(DeltaTime);
 	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, false, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
+}
+
+void AWeapnSystem::SecondMarkerAttack_Implementation()
+{
+}
+
+void AWeapnSystem::FirstMarkerAttack_Implementation()
+{
+}
+
+void AWeapnSystem::ThirdMarkerAttack_Implementation()
+{
 }
 
 float AWeapnSystem::GetEventPercentage()

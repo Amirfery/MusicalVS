@@ -6,6 +6,8 @@
 #include "Engine/DataAsset.h"
 #include "EnemyData.generated.h"
 
+class UCharacterStatData;
+
 UENUM(BlueprintType)
 enum class EEnemyType : uint8
 {
@@ -37,6 +39,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EEnemyType EnemyType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UCharacterStatData> BaseStat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Speed;

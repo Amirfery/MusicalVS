@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameManager.generated.h"
 
+class UCharacterStatData;
 class AWeapnSystem;
 /**
  * 
@@ -20,6 +21,9 @@ public:
 	TObjectPtr<UDataTable> WeaponsDataTable;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UDataTable> PassivesDataTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UDataTable> BlessingsDataTable;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -27,6 +31,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AWeapnSystem> StartCharacter;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UCharacterStatData> CharacterStatData;
+	
 public:
 	
 	UFUNCTION(BlueprintCallable)

@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
+class UEnemyStatComponent;
+class UStatComponent;
 class ACharacterSystem;
 class UHealthComponent;
 class UEnemyData;
@@ -72,8 +74,8 @@ public:
 	UPROPERTY(Transient)
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
 
-	UPROPERTY(Transient)
-	TObjectPtr<UHealthComponent> HealthComponent;
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UEnemyStatComponent> Stats;
 
 	UPROPERTY(Transient)
 	float MaxDistance;

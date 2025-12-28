@@ -52,5 +52,11 @@ public:
 	virtual void Upgrade_Implementation() override;
 	
 	virtual void Attack_Implementation() override;
+
+	virtual void FirstMarkerAttack_Implementation() override;
+
+	virtual void SecondMarkerAttack_Implementation() override;
+
+	virtual void ThirdMarkerAttack_Implementation() override;
 };
 

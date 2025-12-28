@@ -2,6 +2,8 @@
 
 #include "GenericStructs.generated.h"
 
+class APassiveSystem;
+class UPassiveData;
 class ABlessingSystem;
 class UBlessingData;
 class ULevelData;
@@ -122,4 +124,25 @@ struct FBlessingWeaponData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UBlessingData> BlessingData;
+};
+
+USTRUCT(BlueprintType)
+struct FPassive : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UTexture2D> Icon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<APassiveSystem> PassiveClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UPassiveData> PassiveData;
 };

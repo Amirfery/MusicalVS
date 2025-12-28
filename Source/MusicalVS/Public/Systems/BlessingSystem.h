@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	int32 Level = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FName Id;
+
 private:
 	UFUNCTION()
 	virtual void OnTimelineMarker(FString Name, int32 Position);

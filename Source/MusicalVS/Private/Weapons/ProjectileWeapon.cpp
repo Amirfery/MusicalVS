@@ -119,3 +119,19 @@ void AProjectileWeapon::Attack_Implementation()
 		SpawnProjectileAtEnemy(Cast<AEnemy>(NearestEnemy));
 	}
 }
+
+void AProjectileWeapon::FirstMarkerAttack_Implementation()
+{
+	Super::FirstMarkerAttack_Implementation();
+	Attack_Implementation();
+}
+
+void AProjectileWeapon::SecondMarkerAttack_Implementation()
+{
+	Super::SecondMarkerAttack_Implementation();
+}
+
+void AProjectileWeapon::ThirdMarkerAttack_Implementation()
+{
+	Super::ThirdMarkerAttack_Implementation();
+}

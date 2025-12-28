@@ -7,7 +7,7 @@
 #include "PoolSystem.h"
 #include "TickSubsystem.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/HealthComponent.h"
+#include "Components/EnemyStatComponent.h"
 #include "DataAssets/EnemyData.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -19,6 +19,7 @@
 AEnemy::AEnemy()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	Stats = CreateDefaultSubobject<UEnemyStatComponent>(TEXT("Stats"));
 	
 }
 
@@ -34,10 +35,9 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 	Mesh = GetComponentByClass<UStaticMeshComponent>();
 	CapsuleComponent = GetComponentByClass<UCapsuleComponent>();
-	HealthComponent = GetComponentByClass<UHealthComponent>();
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
-	
+	Stats->OnEnemyDied.AddDynamic(this, &AEnemy::Die);
 }
 
 void AEnemy::PostLoad()
@@ -50,13 +50,12 @@ void AEnemy::PostLoad()
 	SetActorTickEnabled(false); 
 }
 
-// Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (!bIsAlive)
 		return;
-	FVector TargetValue = (PlayerCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal() * Speed;
+	FVector TargetValue = (PlayerCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal() * Stats->GetMovementSpeed();
 	CapsuleComponent->SetPhysicsLinearVelocity(TargetValue);
 	// AddActorWorldOffset(TargetValue * DeltaTime);
 	FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCharacter->GetActorLocation());
@@ -90,8 +89,7 @@ void AEnemy::Initialize(UEnemyData* NewEnemyData)
 {
 	bIsAlive = true;
 	EnemyData = NewEnemyData;
-	HealthComponent->MaxHealth = EnemyData->Hp;
-	HealthComponent->CurrentHealth = EnemyData->Hp;
+	Stats->Initialize(EnemyData->BaseStat);
 	// Mesh->SetStaticMesh(EnemyData->SkeletalMesh);
 	// DynMat = Mesh->CreateAndSetMaterialInstanceDynamicFromMaterial(0, NewEnemyData->Material);
 	// DynMat->SetScalarParameterValue(FName("TimeOffset"), FMath::RandRange(1, 100));

@@ -3,12 +3,14 @@
 
 #include "Systems/CharacterSystem.h"
 #include "GameManager.h"
-#include "LevelManager.h"
+#include "Components/PlayerStatComponent.h"
 #include "DataAssets/AttackData.h"
+#include "DataAssets/PassiveData.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Infrastructure/GenericStructs.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/BlessingSystem.h"
+#include "Systems/PassiveSystem.h"
 #include "Systems/WeapnSystem.h"
 
 class UGameManager;
@@ -20,6 +22,8 @@ ACharacterSystem::ACharacterSystem()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Instance = this;
+
+	Stats = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("Stats"));
 }
 
 // Called when the game starts or when spawned
@@ -30,6 +34,7 @@ void ACharacterSystem::BeginPlay()
 	NeededXpToLevelUp = 10;
 	XP = 0;
 	PrevTickEventPercentage = 0.0f;
+	
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, [this, ]&ACharacterSystem::AoeAttack, 0.5f, true);
 }
@@ -38,6 +43,7 @@ void ACharacterSystem::BeginPlay()
 void ACharacterSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	GetCharacterMovement()->MaxWalkSpeed = Stats->GetMovementSpeed();
 	const float CurrentTickEventPercentage = MainWeapon->GetEventPercentage();
 	// UKismetSystemLibrary::PrintString(
 	// 	GetWorld(),
@@ -66,6 +72,16 @@ void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 		MainWeapon = Weapon;
 	
 	Weapons.Add(Weapon->Id, Weapon);
+	for (auto Temp : Weapons)
+	{
+		Temp.Value->SetEventPercentage(0);
+		Temp.Value->SetPaused(bIsGamePaused);
+	}
+}
+
+void ACharacterSystem::AddBlessing(ABlessingSystem* Blessing)
+{
+	Blessings.Add(Blessing->Id, Blessing);
 	for (auto Temp : Weapons)
 	{
 		Temp.Value->SetEventPercentage(0);
@@ -102,14 +118,14 @@ void ACharacterSystem::AddXP(int32 Amount)
 	}
 }
 
-TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
+TArray<FName> ACharacterSystem::GetWeaponUpgrades()
 {
 	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
 
 	UDataTable* Table = GM->WeaponsDataTable;
 	
 	if (!Table)
-		return TArray<FWeaponToUpgrade>();
+		return TArray<FName>();
 	
 	TArray<FName> AllRows = Table->GetRowNames();
 	TArray<FName> ValidRows;
@@ -123,42 +139,99 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetWeaponUpgrades()
 		else if (Weapons.Num() < 10)
 			ValidRows.Add(Row);
 	}
-	TArray<FName> RandomRows;
+	return ValidRows;
+}
 
-	if (ValidRows.Num() > 3)
+TArray<FName> ACharacterSystem::GetPassiveUpgrades()
+{
+	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
+
+	UDataTable* Table = GM->PassivesDataTable;
+	
+	if (!Table)
+		return TArray<FName>();
+	
+	TArray<FName> AllRows = Table->GetRowNames();
+	TArray<FName> ValidRows;
+	for (FName Row : AllRows)
 	{
-		ValidRows.Sort([](const FName& A, const FName& B)
+		if (Passives.Contains(Row))
 		{
-			return FMath::RandRange(0,1) == 0;
-		});
-		RandomRows.Append(ValidRows.GetData(), 3);
+			if (Passives[Row]->PassiveData->LevelUps.Num() > Passives[Row]->Level)
+				ValidRows.Add(Row);
+		}
+		else if (Passives.Num() < 10)
+			ValidRows.Add(Row);
 	}
-	else
+
+	return ValidRows;
+}
+
+TArray<FWeaponToUpgrade> ACharacterSystem::GetUpgrades(const int Count)
+{
+	TArray<FName> AllUpgrades;
+	AllUpgrades.Append(GetWeaponUpgrades());
+	AllUpgrades.Append(GetPassiveUpgrades());
+
+	if (AllUpgrades.IsEmpty())
+		return {};
+
+	for (int32 i = AllUpgrades.Num() - 1; i > 0; --i)
 	{
-		RandomRows = ValidRows;
+		int32 j = FMath::RandRange(0, i);
+		AllUpgrades.Swap(i, j);
 	}
+
+	const int32 FinalCount = FMath::Min(Count, AllUpgrades.Num());
+
+	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
+	check(GM);
 
 	TArray<FWeaponToUpgrade> Upgrades;
-	for (FName RowName : RandomRows)
+
+	for (int32 i = 0; i < FinalCount; ++i)
 	{
-		FWeapon* RowHandle = Table->FindRow<FWeapon>(RowName, TEXT("Get a row from weapon data table."));
-		Upgrades.Add(FWeaponToUpgrade(RowName, RowHandle->DisplayName, RowHandle->Description, RowHandle->Icon));
+		const FName RowName = AllUpgrades[i];
+
+		if (const FWeapon* WeaponRow = GM->WeaponsDataTable->FindRow<FWeapon>(RowName, TEXT("Weapon Lookup")))
+		{
+			Upgrades.Emplace(
+				RowName,
+				WeaponRow->DisplayName,
+				WeaponRow->Description,
+				WeaponRow->Icon
+			);
+			continue;
+		}
+
+		if (const FPassive* PassiveRow = GM->PassivesDataTable->FindRow<FPassive>(RowName, TEXT("Passive Lookup")))
+		{
+			Upgrades.Emplace(
+				RowName,
+				PassiveRow->DisplayName,
+				PassiveRow->Description,
+				PassiveRow->Icon
+			);
+		}
 	}
-	
-	if (Upgrades.Num() > 0)
+
+	if (!Upgrades.IsEmpty())
+	{
 		SetPaused(true);
+	}
 
 	return Upgrades;
 }
 
-TArray<FBlessingToUpgrade> ACharacterSystem::GetBlessingUpgrades()
+
+TArray<FWeaponToUpgrade> ACharacterSystem::GetBlessingUpgrades()
 {
 	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
 
 	UDataTable* Table = GM->BlessingsDataTable;
 	
 	if (!Table)
-		return TArray<FBlessingToUpgrade>();
+		return TArray<FWeaponToUpgrade>();
 	
 	TArray<FName> AllRows = Table->GetRowNames();
 	TArray<FName> ValidRows;
@@ -184,11 +257,11 @@ TArray<FBlessingToUpgrade> ACharacterSystem::GetBlessingUpgrades()
 		RandomRows = ValidRows;
 	}
 
-	TArray<FBlessingToUpgrade> Upgrades;
+	TArray<FWeaponToUpgrade> Upgrades;
 	for (FName RowName : RandomRows)
 	{
 		FBlessingWeaponData* RowHandle = Table->FindRow<FBlessingWeaponData>(RowName, TEXT("Get a row from blessings data table."));
-		Upgrades.Add(FBlessingToUpgrade(RowName, RowHandle->DisplayName, RowHandle->Description, RowHandle->Icon));
+		Upgrades.Add(FWeaponToUpgrade(RowName, RowHandle->DisplayName, RowHandle->Description, RowHandle->Icon));
 	}
 	
 	if (Upgrades.Num() > 0)

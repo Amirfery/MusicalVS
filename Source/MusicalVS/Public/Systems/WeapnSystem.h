@@ -79,6 +79,15 @@ public:
 	void Upgrade();
 
 	UFUNCTION(BlueprintNativeEvent)
+	void FirstMarkerAttack();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SecondMarkerAttack();
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void ThirdMarkerAttack();
+	
+	UFUNCTION(BlueprintNativeEvent)
 	void Attack();
 
 	UFUNCTION(BlueprintCallable)

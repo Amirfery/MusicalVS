@@ -7,6 +7,8 @@
 #include "Infrastructure/GenericStructs.h"
 #include "CharacterSystem.generated.h"
 
+class APassiveSystem;
+class UPlayerStatComponent;
 struct FWeaponToUpgrade;
 class AWeapnSystem;
 class APoolManager;
@@ -28,6 +30,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	TMap<FName, TObjectPtr<ABlessingSystem>> Blessings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
+	TMap<FName, TObjectPtr<APassiveSystem>> Passives;
 
 	FTimerHandle AutoAttackTimer;
 
@@ -57,6 +62,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLoopRestarted OnLoopRestarted;
 
+	UPROPERTY(BluePrintReadOnly)
+	TObjectPtr<UPlayerStatComponent> Stats;
+
 public:
 	// Sets default values for this character's properties
 	ACharacterSystem();
@@ -79,13 +87,22 @@ public:
 	void AddWeapon(AWeapnSystem* Weapon);
 
 	UFUNCTION(BlueprintCallable)
+	void AddBlessing(ABlessingSystem* Blessing);
+
+	UFUNCTION(BlueprintCallable)
 	void AddXP(int32 Amount);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<FWeaponToUpgrade> GetWeaponUpgrades();
+	TArray<FName> GetWeaponUpgrades();
 
 	UFUNCTION(BlueprintCallable)
-	TArray<FBlessingToUpgrade> GetBlessingUpgrades();
+	TArray<FName> GetPassiveUpgrades();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FWeaponToUpgrade> GetUpgrades(const int Count = 3);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FWeaponToUpgrade> GetBlessingUpgrades();
 
 	UFUNCTION(BlueprintCallable)
 	void SetPaused(bool Paused);
