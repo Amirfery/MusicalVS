@@ -2,6 +2,7 @@
 
 #include "FMODAudioComponent.h"
 #include "DataAssets/BlessingData.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
 
 
@@ -44,6 +45,18 @@ void ABlessingSystem::BeginPlay()
 void ABlessingSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), static_cast<float>(FmodAudioComp->GetTimelinePosition()) / FmodAudioComp->GetLength()), true, true, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
+
+}
+
+void ABlessingSystem::SetPaused(bool Paused)
+{
+	FmodAudioComp->SetPaused(Paused);
+}
+
+void ABlessingSystem::SetEventPercentage(float Percentage)
+{
+	FmodAudioComp->SetTimelinePosition(FmodAudioComp->GetLength() * Percentage);
 }
 
 void ABlessingSystem::Upgrade_Implementation()

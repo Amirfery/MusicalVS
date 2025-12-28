@@ -77,11 +77,21 @@ void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 		Temp.Value->SetEventPercentage(0);
 		Temp.Value->SetPaused(bIsGamePaused);
 	}
+	for (auto Temp : Blessings)
+	{
+		Temp.Value->SetEventPercentage(0);
+		Temp.Value->SetPaused(bIsGamePaused);
+	}
 }
 
 void ACharacterSystem::AddBlessing(ABlessingSystem* Blessing)
 {
 	Blessings.Add(Blessing->Id, Blessing);
+	for (auto Temp : Weapons)
+	{
+		Temp.Value->SetEventPercentage(0);
+		Temp.Value->SetPaused(bIsGamePaused);
+	}
 	for (auto Temp : Weapons)
 	{
 		Temp.Value->SetEventPercentage(0);
@@ -276,6 +286,10 @@ void ACharacterSystem::SetPaused(bool Paused)
 	for (const TPair<FName, TObjectPtr<AWeapnSystem>>& Weapon : Weapons)
 	{
 		Weapon.Value->SetPaused(Paused);
+	}
+	for (const TPair<FName, TObjectPtr<ABlessingSystem>>& Blessing : Blessings)
+	{
+		Blessing.Value->SetPaused(Paused);
 	}
 }
 

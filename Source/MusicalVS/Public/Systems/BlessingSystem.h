@@ -51,4 +51,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void Upgrade();
+
+	void SetPaused(bool Paused);
+	void SetEventPercentage(float Percentage);
 };
