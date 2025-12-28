@@ -294,6 +294,17 @@ void ACharacterSystem::SetStartWeapon()
 	AddWeapon(static_cast<AWeapnSystem*>(Actor));
 }
 
+void ACharacterSystem::StartSolo()
+{
+	TArray<FName> Keys;
+	Weapons.GetKeys(Keys);
+	for (FName WeaponName : Keys)
+	{
+		Weapons[WeaponName]->SetEventPercentage(0);
+	}
+	MainWeapon->StartSolo();
+}
+
 void ACharacterSystem::Init()
 {
 }

@@ -162,3 +162,29 @@ void AAoeWeapon::ThirdMarkerAttack_Implementation()
 			IDamageable::Execute_TakeDamage(Enemy, Damage);
 	}
 }
+
+void AAoeWeapon::FourthMarketAttack_Implementation()
+{
+	Super::FourthMarketAttack_Implementation();
+	TArray<FOverlapResult> Overlaps;
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
+
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+
+	EnemiesInRange = Overlaps;
+	for (auto EnemyOverlap : EnemiesInRange)
+	{
+		AActor* Enemy = EnemyOverlap.GetActor();
+		if (!IsValid(Enemy))
+			continue;
+		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(Enemy->GetRootComponent()))
+		{
+			FVector Dir = (Enemy->GetActorLocation() - Character->GetActorLocation()).GetSafeNormal();
+			Dir.Z = 0.f;
+			Dir.Normalize();
+			Prim->AddImpulse(Dir * EffectTime, NAME_None, true);
+		}
+		if (Enemy->Implements<UDamageable>())
+			IDamageable::Execute_TakeDamage(Enemy, Damage * 2.f);
+	}
+}

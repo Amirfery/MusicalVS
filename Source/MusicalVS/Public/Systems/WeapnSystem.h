@@ -86,9 +86,15 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void ThirdMarkerAttack();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void FourthMarketAttack();
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void Attack();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void StartSolo();
 
 	UFUNCTION(BlueprintCallable)
 	float GetEventPercentage();

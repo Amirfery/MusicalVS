@@ -52,8 +52,8 @@ void ULevelManager::Tick(float DeltaTime)
 
 		if (per < 0.1f)
 		{
-			UFMODBlueprintStatics::PlayEventAttached(LevelData->WaveStartSound, ACharacterSystem::GetCharacterInstance()->GetCapsuleComponent(), FName(TEXT("Wave Sound")), FVector::ZeroVector, EAttachLocation::Type::SnapToTarget,
-				false, true, true);
+			// UFMODBlueprintStatics::PlayEventAttached(LevelData->WaveStartSound, ACharacterSystem::GetCharacterInstance()->GetCapsuleComponent(), FName(TEXT("Wave Sound")), FVector::ZeroVector, EAttachLocation::Type::SnapToTarget,
+				// false, true, true);
 			bPlayWaveSound = false;
 		}
 	}

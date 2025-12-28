@@ -28,15 +28,15 @@ void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 {
 	if (!bShouldAttack)
 		return;
-	UKismetSystemLibrary::PrintString(
-		GetWorld(),
-		Name,
-		true,
-		true,   // Print to log
-		FLinearColor::Green,
-		2.0f,    // Duration,
-		FName("aaaasaf")
-	);
+	// UKismetSystemLibrary::PrintString(
+	// 	GetWorld(),
+	// 	Name,
+	// 	true,
+	// 	true,   // Print to log
+	// 	FLinearColor::Green,
+	// 	2.0f,    // Duration,
+	// 	FName("aaaasaf")
+	// );
 	if (Name.Contains(AttackData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
 		FirstMarkerAttack();
 	else if (Name.Contains(AttackData->AttackMarkers[1].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
@@ -67,7 +67,7 @@ void AWeapnSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateRotationAroundCharacter(DeltaTime);
-	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, false, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, true, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
 }
 
 void AWeapnSystem::SecondMarkerAttack_Implementation()
@@ -82,6 +82,16 @@ void AWeapnSystem::ThirdMarkerAttack_Implementation()
 {
 }
 
+void AWeapnSystem::StartSolo_Implementation()
+{
+	FmodAudioComp->SetEvent(AttackData->SoloEvent);
+	FmodAudioComp->Play();
+}
+
+void AWeapnSystem::FourthMarketAttack_Implementation()
+{
+}
+
 float AWeapnSystem::GetEventPercentage()
 {
 	return static_cast<float>(FmodAudioComp->GetTimelinePosition()) / FmodAudioComp->GetLength(); 
@@ -90,7 +100,7 @@ float AWeapnSystem::GetEventPercentage()
 void AWeapnSystem::SetPaused(const bool Paused)
 {
 	bShouldAttack = !Paused;
-	// FmodAudioComp->SetPaused(Paused);
+	FmodAudioComp->SetPaused(Paused);
 }
 
 void AWeapnSystem::SetEventPercentage(float Percentage)

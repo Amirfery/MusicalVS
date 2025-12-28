@@ -113,6 +113,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetStartWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void StartSolo();
+
 private:
 	UFUNCTION(BlueprintCallable)
 	void Init();

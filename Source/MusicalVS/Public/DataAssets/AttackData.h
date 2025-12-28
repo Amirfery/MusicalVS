@@ -34,6 +34,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UFMODEvent> SoundEvent;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> SoloEvent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float BaseDamage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float BaseRange;

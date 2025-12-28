@@ -54,4 +54,6 @@ public:
 	virtual void SecondMarkerAttack_Implementation() override;
 
 	virtual void ThirdMarkerAttack_Implementation() override;
+
+	virtual void FourthMarketAttack_Implementation() override;
 };
