@@ -88,7 +88,7 @@ public:
 	void ThirdMarkerAttack();
 
 	UFUNCTION(BlueprintNativeEvent)
-	void FourthMarketAttack();
+	void FourthMarkerAttack();
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void Attack();

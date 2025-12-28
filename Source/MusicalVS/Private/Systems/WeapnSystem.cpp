@@ -28,21 +28,23 @@ void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 {
 	if (!bShouldAttack)
 		return;
-	// UKismetSystemLibrary::PrintString(
-	// 	GetWorld(),
-	// 	Name,
-	// 	true,
-	// 	true,   // Print to log
-	// 	FLinearColor::Green,
-	// 	2.0f,    // Duration,
-	// 	FName("aaaasaf")
-	// );
+	UKismetSystemLibrary::PrintString(
+		GetWorld(),
+		Name,
+		true,
+		true,   // Print to log
+		FLinearColor::Green,
+		2.0f,    // Duration,
+		FName("aaaasaf")
+	);
 	if (Name.Contains(AttackData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
 		FirstMarkerAttack();
 	else if (Name.Contains(AttackData->AttackMarkers[1].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
 		SecondMarkerAttack();
 	else if (Name.Contains(AttackData->AttackMarkers[2].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
 		ThirdMarkerAttack();
+	else if (Name.Contains(AttackData->AttackMarkers[3].ToString(), ESearchCase::IgnoreCase))
+		FourthMarkerAttack();
 }
 
 // Called when the game starts or when spawned
@@ -88,7 +90,7 @@ void AWeapnSystem::StartSolo_Implementation()
 	FmodAudioComp->Play();
 }
 
-void AWeapnSystem::FourthMarketAttack_Implementation()
+void AWeapnSystem::FourthMarkerAttack_Implementation()
 {
 }
 

@@ -163,9 +163,9 @@ void AAoeWeapon::ThirdMarkerAttack_Implementation()
 	}
 }
 
-void AAoeWeapon::FourthMarketAttack_Implementation()
+void AAoeWeapon::FourthMarkerAttack_Implementation()
 {
-	Super::FourthMarketAttack_Implementation();
+	Super::FourthMarkerAttack_Implementation();
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
 
