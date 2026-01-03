@@ -34,6 +34,7 @@ void ACharacterSystem::BeginPlay()
 	NeededXpToLevelUp = 10;
 	XP = 0;
 	PrevTickEventPercentage = 0.0f;
+	bIsRising = false;
 	
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, [this, ]&ACharacterSystem::AoeAttack, 0.5f, true);
@@ -58,6 +59,12 @@ void ACharacterSystem::Tick(float DeltaTime)
 		OnLoopRestarted.Broadcast();
 	}
 	PrevTickEventPercentage = CurrentTickEventPercentage;
+	if (bIsRising)
+	{
+		RisingElapsedTime += DeltaTime;
+		FVector CurrentLocation = GetActorLocation();
+		SetActorLocation(FVector(CurrentLocation.X, CurrentLocation.Y, (RisingCurve->GetFloatValue(RisingElapsedTime/RisingTime) * RisingHeight) + StartingHeight));
+	}
 }
 
 // Called to bind functionality to input
@@ -309,16 +316,33 @@ void ACharacterSystem::SetStartWeapon()
 }
 
 void ACharacterSystem::StartSolo()
-{
-	TArray<FName> Keys;
-	Weapons.GetKeys(Keys);
-	for (FName WeaponName : Keys)
-	{
-		Weapons[WeaponName]->SetEventPercentage(0);
-	}
-	MainWeapon->StartSolo();
+{	
+	CurrentFadeTime = 0.f;
+	RisingElapsedTime = 0.f;
+	GetWorld()->GetTimerManager().SetTimer(
+		VolumeFadeTimer,
+		this,
+		&ACharacterSystem::VolumeFadeout,
+		0.1f,
+		true
+	);
+	
+	MainWeapon->SoloAttack();
 }
 
 void ACharacterSystem::Init()
 {
+}
+
+void ACharacterSystem::VolumeFadeout()
+{
+	CurrentFadeTime += 0.1f;
+	if (CurrentFadeTime >= MainWeapon->AttackData->VolumeReductionTime)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(VolumeFadeTimer);
+	}
+	for (auto Element : Weapons)
+	{
+		Element.Value->ChangeVolume(-0.1f / MainWeapon->AttackData->VolumeReductionTime);
+	}
 }

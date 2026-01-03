@@ -24,6 +24,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Audio")
 	UFMODAudioComponent* FmodAudioComp;
 
+	UPROPERTY(VisibleAnywhere, Category = "Audio")
+	UFMODAudioComponent* SoloFmodAudioComp;
+
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* StaticMesh;
 
@@ -48,6 +51,9 @@ protected:
 	UPROPERTY(Transient)
 	bool bShouldAttack;
 
+	UPROPERTY(Transient)
+	float CurrentVolume;
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 	int32 Level = 0;
@@ -68,8 +74,20 @@ private:
 	UFUNCTION()
 	virtual void OnTimelineMarker(FString Name, int32 Position);
 
+	UFUNCTION()
+	virtual void SoloOnTimelineMarker(FString Name, int32 Position);
+
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void PreStartSoloPhase();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void StartSoloPhase();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void EndSoloPhase();
 
 public:
 	// Called every frame
@@ -94,12 +112,13 @@ public:
 	void Attack();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void StartSolo();
+	void SoloAttack();
 
 	UFUNCTION(BlueprintCallable)
 	float GetEventPercentage();
 
 	void SetPaused(bool Paused);
 	void SetEventPercentage(float Percentage);
+	void ChangeVolume(float Volume);
 	void UpdateRotationAroundCharacter(float DeltaTime);
 };

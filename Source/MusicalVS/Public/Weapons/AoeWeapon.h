@@ -12,6 +12,10 @@ class MUSICALVS_API AAoeWeapon : public AWeapnSystem
 {
 	GENERATED_BODY()
 
+private:
+	FTimerHandle SlamTimerHandle;
+	FTimerHandle RiseTimerHandle;
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FOverlapResult> EnemiesInRange;
@@ -27,6 +31,13 @@ public:
 public:
 	// Sets default values for this actor's properties
 	AAoeWeapon();
+
+private:
+	UFUNCTION()
+	void SlamDown();
+
+	UFUNCTION()
+	void OnLandedCallback(const FHitResult& Hit);
 
 protected:
 	virtual void PostInitializeComponents() override;
@@ -56,4 +67,8 @@ public:
 	virtual void ThirdMarkerAttack_Implementation() override;
 
 	virtual void FourthMarkerAttack_Implementation() override;
+
+	virtual void PreStartSoloPhase_Implementation() override;
+
+	virtual void StartSoloPhase_Implementation() override;
 };

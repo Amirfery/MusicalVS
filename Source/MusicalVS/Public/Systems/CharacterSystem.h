@@ -35,6 +35,9 @@ private:
 	TMap<FName, TObjectPtr<APassiveSystem>> Passives;
 
 	FTimerHandle AutoAttackTimer;
+	FTimerHandle VolumeFadeTimer;
+
+	float CurrentFadeTime;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLevelUp OnLevelUp;
@@ -47,6 +50,9 @@ private:
 
 	UPROPERTY(Transient)
 	float PrevTickEventPercentage;
+
+	UPROPERTY(Transient)
+	float RisingElapsedTime;
 
 public:
 	UPROPERTY(BlueprintReadWrite)
@@ -64,6 +70,24 @@ public:
 
 	UPROPERTY(BluePrintReadOnly)
 	TObjectPtr<UPlayerStatComponent> Stats;
+
+	UPROPERTY(Transient)
+	bool bIsRising;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RisingHeight;
+
+	UPROPERTY(Transient)
+	float StartingHeight;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RisingTime;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UCurveFloat> RisingCurve;
+
+	UPROPERTY(EditDefaultsOnly)
+	float FallingTime;
 
 public:
 	// Sets default values for this character's properties
@@ -119,5 +143,8 @@ public:
 private:
 	UFUNCTION(BlueprintCallable)
 	void Init();
+
+	UFUNCTION(BlueprintCallable)
+	void VolumeFadeout();
 	
 };

@@ -20,6 +20,11 @@ AWeapnSystem::AWeapnSystem()
 	FmodAudioComp->bAutoActivate = false;
 	FmodAudioComp->bEnableTimelineCallbacks = true;
 
+	SoloFmodAudioComp = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("SoloFmodAudioComp"));
+	SoloFmodAudioComp->SetupAttachment(RootComponent);
+	SoloFmodAudioComp->bAutoActivate = false;
+	SoloFmodAudioComp->bEnableTimelineCallbacks = true;
+
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 }
@@ -47,6 +52,25 @@ void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 		FourthMarkerAttack();
 }
 
+void AWeapnSystem::SoloOnTimelineMarker(FString Name, int32 Position)
+{
+	UKismetSystemLibrary::PrintString(
+		GetWorld(),
+		Name,
+		true,
+		true,   // Print to log
+		FLinearColor::Green,
+		2.0f,    // Duration,
+		FName("aaaafsaf")
+	);
+	if (Name.Contains("Rise", ESearchCase::IgnoreCase))
+		PreStartSoloPhase();
+	else if (Name.Contains("Start", ESearchCase::IgnoreCase))
+		StartSoloPhase();
+	else if (Name.Contains("End", ESearchCase::IgnoreCase))
+		EndSoloPhase();
+}
+
 // Called when the game starts or when spawned
 void AWeapnSystem::BeginPlay()
 {
@@ -56,12 +80,29 @@ void AWeapnSystem::BeginPlay()
 	FmodAudioComp->SetEvent(AttackData->SoundEvent);
 	FmodAudioComp->OnTimelineMarker.AddDynamic(this, &AWeapnSystem::OnTimelineMarker);
 	FmodAudioComp->Play();
+
+	SoloFmodAudioComp->SetEvent(AttackData->SoloEvent);
+	SoloFmodAudioComp->OnTimelineMarker.AddDynamic(this, &AWeapnSystem::SoloOnTimelineMarker);
+	
 	RandomRotation = FQuat::MakeFromEuler(FVector(
 		FMath::RandBool() ? FMath::RandRange(-RotationSafeDegree, RotationSafeDegree) : FMath::RandRange(180 - RotationSafeDegree, 180 + RotationSafeDegree),
 		FMath::RandBool() ? FMath::RandRange(-RotationSafeDegree, RotationSafeDegree) : FMath::RandRange(180 - RotationSafeDegree, 180 + RotationSafeDegree),
 		FMath::RandRange(0.0f, 360.0f)));
 	RotationTime = 0;
 	bShouldAttack = true;
+	CurrentVolume = 1.f;
+}
+
+void AWeapnSystem::PreStartSoloPhase_Implementation()
+{
+}
+
+void AWeapnSystem::StartSoloPhase_Implementation()
+{
+}
+
+void AWeapnSystem::EndSoloPhase_Implementation()
+{
 }
 
 // Called every frame
@@ -69,7 +110,7 @@ void AWeapnSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateRotationAroundCharacter(DeltaTime);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, true, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s, %f"), *GetName(), GetEventPercentage()), true, true, FColor::Red, 2,  FName(*(GetName() + TEXT("Weapon"))));
 }
 
 void AWeapnSystem::SecondMarkerAttack_Implementation()
@@ -84,14 +125,16 @@ void AWeapnSystem::ThirdMarkerAttack_Implementation()
 {
 }
 
-void AWeapnSystem::StartSolo_Implementation()
-{
-	FmodAudioComp->SetEvent(AttackData->SoloEvent);
-	FmodAudioComp->Play();
-}
-
 void AWeapnSystem::FourthMarkerAttack_Implementation()
 {
+}
+
+void AWeapnSystem::SoloAttack_Implementation()
+{
+	FmodAudioComp->Stop();
+	Character->SetPaused(true);
+	SoloFmodAudioComp->SetTimelinePosition(SoloFmodAudioComp->GetLength() * 0);
+	SoloFmodAudioComp->Play();
 }
 
 float AWeapnSystem::GetEventPercentage()
@@ -108,6 +151,21 @@ void AWeapnSystem::SetPaused(const bool Paused)
 void AWeapnSystem::SetEventPercentage(float Percentage)
 {
 	FmodAudioComp->SetTimelinePosition(FmodAudioComp->GetLength() * Percentage);
+}
+
+void AWeapnSystem::ChangeVolume(float Volume)
+{
+	CurrentVolume = FMath::Clamp(CurrentVolume + Volume, 0.0f, 1.0f);
+	UKismetSystemLibrary::PrintString(
+	GetWorld(),
+	FString::Printf(TEXT("Volume %f"), CurrentVolume),
+	true,
+	true,   // Print to log
+	FLinearColor::Green,
+	2.0f,    // Duration,
+	FName("aaasafsaf")
+);
+	FmodAudioComp->SetVolume(CurrentVolume * 10);
 }
 
 void AWeapnSystem::UpdateRotationAroundCharacter(float DeltaTime)

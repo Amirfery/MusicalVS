@@ -6,6 +6,7 @@
 #include "Components/HealthComponent.h"
 #include "DataAssets/AttackData.h"
 #include "Engine/OverlapResult.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interfaces/Damageable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
@@ -17,6 +18,8 @@ AAoeWeapon::AAoeWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
+
+
 
 void AAoeWeapon::PostInitializeComponents()
 {
@@ -187,4 +190,69 @@ void AAoeWeapon::FourthMarkerAttack_Implementation()
 		if (Enemy->Implements<UDamageable>())
 			IDamageable::Execute_TakeDamage(Enemy, Damage * 2.f);
 	}
+}
+
+void AAoeWeapon::SlamDown()
+{
+	const float SlamSpeed = -1.f * Character->RisingHeight / Character->FallingTime;
+	Character->LaunchCharacter(FVector(0.f, 0.f, SlamSpeed), true, true);
+	
+	Character->LandedDelegate.AddDynamic(this, &AAoeWeapon::OnLandedCallback);
+}
+
+void AAoeWeapon::OnLandedCallback(const FHitResult& Hit)
+{
+	Character->LandedDelegate.RemoveDynamic(this, &AAoeWeapon::OnLandedCallback);
+	Character->GetCharacterMovement()->MovementMode = MOVE_Walking;
+	Character->SetPaused(false);
+	
+	TArray<FOverlapResult> Overlaps;
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius * 3.f);
+
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+
+	EnemiesInRange = Overlaps;
+	for (auto EnemyOverlap : EnemiesInRange)
+	{
+		AActor* Enemy = EnemyOverlap.GetActor();
+		if (!IsValid(Enemy))
+			continue;
+		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(Enemy->GetRootComponent()))
+		{
+			FVector Dir = (Enemy->GetActorLocation() - Character->GetActorLocation()).GetSafeNormal();
+			Dir.Z = 0.f;
+			Dir.Normalize();
+			Prim->AddImpulse(Dir * EffectTime, NAME_None, true);
+		}
+		if (Enemy->Implements<UDamageable>())
+			IDamageable::Execute_TakeDamage(Enemy, Damage);
+	}
+}
+
+void AAoeWeapon::PreStartSoloPhase_Implementation()
+{
+	Super::PreStartSoloPhase_Implementation();
+	Character->GetCharacterMovement()->MovementMode = MOVE_Flying;
+	Character->StartingHeight = Character->GetActorLocation().Z;
+	Character->bIsRising = true;
+
+	//
+	// GetWorld()->GetTimerManager().SetTimer(
+	// 	RiseTimerHandle,
+	// 	this,
+	// 	&AAoeWeapon::RisePlayer,
+	// 	0.1f,
+	// 	true);
+	
+	// const float LiftSpeed = 3000.f;
+
+	// FVector LaunchVelocity = FVector(0.f, 0.f, LiftSpeed);
+	// Character->LaunchCharacter(LaunchVelocity, true, true);
+}
+
+void AAoeWeapon::StartSoloPhase_Implementation()
+{
+	Super::StartSoloPhase_Implementation();
+	Character->bIsRising = false;
+	SlamDown();
 }

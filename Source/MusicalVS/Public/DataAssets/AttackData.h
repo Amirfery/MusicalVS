@@ -32,9 +32,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FName> AttackMarkers;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FName> SoloMarkers;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UFMODEvent> SoundEvent;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UFMODEvent> SoloEvent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float VolumeReductionValue;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float VolumeReductionTime;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float BaseDamage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
