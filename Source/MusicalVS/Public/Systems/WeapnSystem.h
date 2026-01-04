@@ -54,6 +54,9 @@ protected:
 	UPROPERTY(Transient)
 	float CurrentVolume;
 
+	UPROPERTY(Transient)
+	bool bIsInSoloMode;
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 	int32 Level = 0;
@@ -88,6 +91,9 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void EndSoloPhase();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SoloEnded();
 
 public:
 	// Called every frame

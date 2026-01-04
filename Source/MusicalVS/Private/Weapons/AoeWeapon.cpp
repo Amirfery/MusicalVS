@@ -204,8 +204,6 @@ void AAoeWeapon::SlamDown()
 		Character->FallingSpeed = OutHit.Distance / FallingTime;
 		Character->bIsFalling = true;
 	}
-
-	
 	
 	// const float SlamSpeed = -1.f * Character->RisingHeight / Character->FallingTime;
 	// Character->LaunchCharacter(FVector(0.f, 0.f, SlamSpeed), true, true);

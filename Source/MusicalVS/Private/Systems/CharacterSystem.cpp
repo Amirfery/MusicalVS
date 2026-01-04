@@ -344,6 +344,16 @@ void ACharacterSystem::StartSolo()
 	MainWeapon->SoloAttack();
 }
 
+void ACharacterSystem::StopSolo()
+{
+	for (auto Element : Weapons)
+	{
+		Element.Value->ToggleShouldAttack();
+		Element.Value->SetEventPercentage(0.f);
+		Element.Value->ChangeVolume(1.f);
+	}
+}
+
 void ACharacterSystem::Init()
 {
 }

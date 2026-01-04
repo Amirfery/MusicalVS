@@ -144,6 +144,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartSolo();
 
+	UFUNCTION()
+	void StopSolo();
+
 private:
 	UFUNCTION(BlueprintCallable)
 	void Init();

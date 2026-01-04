@@ -69,6 +69,15 @@ void AWeapnSystem::SoloOnTimelineMarker(FString Name, int32 Position)
 		StartSoloPhase();
 	else if (Name.Contains("End", ESearchCase::IgnoreCase))
 		EndSoloPhase();
+	else if (Name.Contains(AttackData->SoloMarkers[0].ToString(), ESearchCase::IgnoreCase))
+		FirstMarkerAttack();
+	else if (Name.Contains(AttackData->SoloMarkers[1].ToString(), ESearchCase::IgnoreCase))
+		SecondMarkerAttack();
+	else if (Name.Contains(AttackData->SoloMarkers[2].ToString(), ESearchCase::IgnoreCase))
+		ThirdMarkerAttack();
+	else if (Name.Contains(AttackData->SoloMarkers[3].ToString(), ESearchCase::IgnoreCase))
+		FourthMarkerAttack();
+	
 }
 
 // Called when the game starts or when spawned
@@ -92,6 +101,7 @@ void AWeapnSystem::BeginPlay()
 	bShouldAttack = true;
 	CurrentVolume = 1.f;
 	FmodAudioComp->SetParameter(FName(TEXT("Volume")), CurrentVolume);
+	bIsInSoloMode = false;
 }
 
 void AWeapnSystem::PreStartSoloPhase_Implementation()
@@ -103,6 +113,10 @@ void AWeapnSystem::StartSoloPhase_Implementation()
 }
 
 void AWeapnSystem::EndSoloPhase_Implementation()
+{
+}
+
+void AWeapnSystem::SoloEnded_Implementation()
 {
 }
 
@@ -134,6 +148,8 @@ void AWeapnSystem::SoloAttack_Implementation()
 {
 	SoloFmodAudioComp->SetTimelinePosition(SoloFmodAudioComp->GetLength() * 0);
 	SoloFmodAudioComp->Play();
+	SoloFmodAudioComp->OnEventStopped.AddDynamic(Character, &ACharacterSystem::StopSolo);
+	bIsInSoloMode = true;
 }
 
 float AWeapnSystem::GetEventPercentage()
