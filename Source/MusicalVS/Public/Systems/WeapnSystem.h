@@ -118,6 +118,7 @@ public:
 	float GetEventPercentage();
 
 	void SetPaused(bool Paused);
+	void ToggleShouldAttack();
 	void SetEventPercentage(float Percentage);
 	void ChangeVolume(float Volume);
 	void UpdateRotationAroundCharacter(float DeltaTime);

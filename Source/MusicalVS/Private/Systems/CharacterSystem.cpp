@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Infrastructure/GenericStructs.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/BlessingSystem.h"
 #include "Systems/PassiveSystem.h"
 #include "Systems/WeapnSystem.h"
@@ -64,6 +65,14 @@ void ACharacterSystem::Tick(float DeltaTime)
 		RisingElapsedTime += DeltaTime;
 		FVector CurrentLocation = GetActorLocation();
 		SetActorLocation(FVector(CurrentLocation.X, CurrentLocation.Y, (RisingCurve->GetFloatValue(RisingElapsedTime/RisingTime) * RisingHeight) + StartingHeight));
+	}
+	if (bIsFalling)
+	{
+		AddActorWorldOffset(FVector(0, 0, -1.f * FallingSpeed * DeltaTime));
+		if (GetActorLocation().Z < FallingDestination.Z + 100)
+		{
+			OnPlayerLanded.Broadcast();
+		}
 	}
 }
 
@@ -326,6 +335,11 @@ void ACharacterSystem::StartSolo()
 		0.1f,
 		true
 	);
+	
+	for (auto Element : Weapons)
+	{
+		Element.Value->ToggleShouldAttack();
+	}
 	
 	MainWeapon->SoloAttack();
 }

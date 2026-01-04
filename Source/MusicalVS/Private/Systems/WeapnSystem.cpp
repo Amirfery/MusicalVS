@@ -33,15 +33,15 @@ void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 {
 	if (!bShouldAttack)
 		return;
-	UKismetSystemLibrary::PrintString(
-		GetWorld(),
-		Name,
-		true,
-		true,   // Print to log
-		FLinearColor::Green,
-		2.0f,    // Duration,
-		FName("aaaasaf")
-	);
+	// UKismetSystemLibrary::PrintString(
+	// 	GetWorld(),
+	// 	Name,
+	// 	true,
+	// 	true,   // Print to log
+	// 	FLinearColor::Green,
+	// 	2.0f,    // Duration,
+	// 	FName("aaaasaf")
+	// );
 	if (Name.Contains(AttackData->AttackMarkers[0].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
 		FirstMarkerAttack();
 	else if (Name.Contains(AttackData->AttackMarkers[1].ToString() + " " + FString::FromInt(Level), ESearchCase::IgnoreCase))
@@ -54,15 +54,15 @@ void AWeapnSystem::OnTimelineMarker(FString Name, int32 Position)
 
 void AWeapnSystem::SoloOnTimelineMarker(FString Name, int32 Position)
 {
-	UKismetSystemLibrary::PrintString(
-		GetWorld(),
-		Name,
-		true,
-		true,   // Print to log
-		FLinearColor::Green,
-		2.0f,    // Duration,
-		FName("aaaafsaf")
-	);
+	// UKismetSystemLibrary::PrintString(
+	// 	GetWorld(),
+	// 	Name,
+	// 	true,
+	// 	true,   // Print to log
+	// 	FLinearColor::Green,
+	// 	2.0f,    // Duration,
+	// 	FName("aaaafsaf")
+	// );
 	if (Name.Contains("Rise", ESearchCase::IgnoreCase))
 		PreStartSoloPhase();
 	else if (Name.Contains("Start", ESearchCase::IgnoreCase))
@@ -91,6 +91,7 @@ void AWeapnSystem::BeginPlay()
 	RotationTime = 0;
 	bShouldAttack = true;
 	CurrentVolume = 1.f;
+	FmodAudioComp->SetParameter(FName(TEXT("Volume")), CurrentVolume);
 }
 
 void AWeapnSystem::PreStartSoloPhase_Implementation()
@@ -131,8 +132,6 @@ void AWeapnSystem::FourthMarkerAttack_Implementation()
 
 void AWeapnSystem::SoloAttack_Implementation()
 {
-	FmodAudioComp->Stop();
-	Character->SetPaused(true);
 	SoloFmodAudioComp->SetTimelinePosition(SoloFmodAudioComp->GetLength() * 0);
 	SoloFmodAudioComp->Play();
 }
@@ -148,6 +147,11 @@ void AWeapnSystem::SetPaused(const bool Paused)
 	FmodAudioComp->SetPaused(Paused);
 }
 
+void AWeapnSystem::ToggleShouldAttack()
+{
+	bShouldAttack = !bShouldAttack;
+}
+
 void AWeapnSystem::SetEventPercentage(float Percentage)
 {
 	FmodAudioComp->SetTimelinePosition(FmodAudioComp->GetLength() * Percentage);
@@ -156,16 +160,7 @@ void AWeapnSystem::SetEventPercentage(float Percentage)
 void AWeapnSystem::ChangeVolume(float Volume)
 {
 	CurrentVolume = FMath::Clamp(CurrentVolume + Volume, 0.0f, 1.0f);
-	UKismetSystemLibrary::PrintString(
-	GetWorld(),
-	FString::Printf(TEXT("Volume %f"), CurrentVolume),
-	true,
-	true,   // Print to log
-	FLinearColor::Green,
-	2.0f,    // Duration,
-	FName("aaasafsaf")
-);
-	FmodAudioComp->SetVolume(CurrentVolume * 10);
+	FmodAudioComp->SetParameter(FName(TEXT("Volume")), CurrentVolume);
 }
 
 void AWeapnSystem::UpdateRotationAroundCharacter(float DeltaTime)

@@ -19,6 +19,9 @@ private:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FOverlapResult> EnemiesInRange;
+
+	UPROPERTY(EditDefaultsOnly)
+	float FallingTime;
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Radius;
@@ -37,7 +40,7 @@ private:
 	void SlamDown();
 
 	UFUNCTION()
-	void OnLandedCallback(const FHitResult& Hit);
+	void OnLandedCallback();
 
 protected:
 	virtual void PostInitializeComponents() override;

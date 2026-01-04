@@ -14,6 +14,7 @@ class AWeapnSystem;
 class APoolManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelUp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerLanded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLoopRestarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneXPAdded, float, Amount);
 
@@ -68,26 +69,29 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLoopRestarted OnLoopRestarted;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerLanded OnPlayerLanded;
+
 	UPROPERTY(BluePrintReadOnly)
 	TObjectPtr<UPlayerStatComponent> Stats;
 
 	UPROPERTY(Transient)
 	bool bIsRising;
-
 	UPROPERTY(EditDefaultsOnly)
 	float RisingHeight;
-
 	UPROPERTY(Transient)
 	float StartingHeight;
-
 	UPROPERTY(EditDefaultsOnly)
 	float RisingTime;
-
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UCurveFloat> RisingCurve;
 
-	UPROPERTY(EditDefaultsOnly)
-	float FallingTime;
+	UPROPERTY(Transient)
+	bool bIsFalling;
+	UPROPERTY(Transient)
+	FVector FallingDestination;
+	UPROPERTY(Transient)
+	float FallingSpeed;
 
 public:
 	// Sets default values for this character's properties

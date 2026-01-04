@@ -194,18 +194,39 @@ void AAoeWeapon::FourthMarkerAttack_Implementation()
 
 void AAoeWeapon::SlamDown()
 {
-	const float SlamSpeed = -1.f * Character->RisingHeight / Character->FallingTime;
-	Character->LaunchCharacter(FVector(0.f, 0.f, SlamSpeed), true, true);
+	struct FHitResult OutHit;
+	FVector StartPoint = Character->GetActorLocation();
+	FVector EndPoint = FVector(StartPoint.X, StartPoint.Y, -10000.f);
+	bool bIsHit = GetWorld()->LineTraceSingleByChannel(OutHit, StartPoint, EndPoint, ECC_GameTraceChannel3, FCollisionQueryParams::DefaultQueryParam, FCollisionResponseParams::DefaultResponseParam);
+	if (bIsHit)
+	{
+		Character->FallingDestination = OutHit.ImpactPoint;
+		Character->FallingSpeed = OutHit.Distance / FallingTime;
+		Character->bIsFalling = true;
+	}
+
 	
-	Character->LandedDelegate.AddDynamic(this, &AAoeWeapon::OnLandedCallback);
+	
+	// const float SlamSpeed = -1.f * Character->RisingHeight / Character->FallingTime;
+	// Character->LaunchCharacter(FVector(0.f, 0.f, SlamSpeed), true, true);
+	
+	Character->OnPlayerLanded.AddDynamic(this, &AAoeWeapon::OnLandedCallback);
 }
 
-void AAoeWeapon::OnLandedCallback(const FHitResult& Hit)
+void AAoeWeapon::OnLandedCallback()
 {
-	Character->LandedDelegate.RemoveDynamic(this, &AAoeWeapon::OnLandedCallback);
+	Character->bIsFalling = false;
+	Character->OnPlayerLanded.RemoveDynamic(this, &AAoeWeapon::OnLandedCallback);
 	Character->GetCharacterMovement()->MovementMode = MOVE_Walking;
-	Character->SetPaused(false);
-	
+	UKismetSystemLibrary::PrintString(
+	GetWorld(),
+	"Landed",
+	true,
+	true,   // Print to log
+	FLinearColor::Green,
+	2.0f,    // Duration,
+	FName("gaha")
+	);
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius * 3.f);
 
@@ -235,19 +256,6 @@ void AAoeWeapon::PreStartSoloPhase_Implementation()
 	Character->GetCharacterMovement()->MovementMode = MOVE_Flying;
 	Character->StartingHeight = Character->GetActorLocation().Z;
 	Character->bIsRising = true;
-
-	//
-	// GetWorld()->GetTimerManager().SetTimer(
-	// 	RiseTimerHandle,
-	// 	this,
-	// 	&AAoeWeapon::RisePlayer,
-	// 	0.1f,
-	// 	true);
-	
-	// const float LiftSpeed = 3000.f;
-
-	// FVector LaunchVelocity = FVector(0.f, 0.f, LiftSpeed);
-	// Character->LaunchCharacter(LaunchVelocity, true, true);
 }
 
 void AAoeWeapon::StartSoloPhase_Implementation()
