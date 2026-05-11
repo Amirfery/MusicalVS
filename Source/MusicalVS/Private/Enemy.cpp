@@ -50,6 +50,26 @@ void AEnemy::PostLoad()
 	SetActorTickEnabled(false); 
 }
 
+void AEnemy::TryDropChest() const
+{
+	if (EnemyData->PotentialChests.IsEmpty())
+		return;
+	
+	float RandomFloat = FMath::RandRange(0.0f, 100.0f);
+	float CumulativeChance = 0.0;
+	for (const FChestDrop& ChestDrop : EnemyData->PotentialChests)
+	{
+		CumulativeChance += ChestDrop.DropChance;
+		if (RandomFloat <= CumulativeChance)
+		{
+			FVector SpawnLocation = GetActorLocation();
+			FRotator SpawnRotator = FRotator::ZeroRotator;
+			GetWorld()->SpawnActor<AChest>(ChestDrop.ChestClass, SpawnLocation, SpawnRotator);
+			break;
+		}
+	}
+}
+
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -80,6 +100,8 @@ void AEnemy::Die()
 		Item->SetFloatValues({static_cast<float>(FMath::RandRange(0, 1))});
 		Item->SetActorLocation(GetActorLocation());
 	}
+	
+	TryDropChest();
 	
 	FreeItem();
 	AEnemyManager::GetInstance()->EnemyDied(this);

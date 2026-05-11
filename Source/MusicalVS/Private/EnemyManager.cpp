@@ -39,7 +39,7 @@ void AEnemyManager::Tick(float DeltaSeconds)
 	float RandomFloat = FMath::RandRange(0.0f, MaxChance);
 	
 	float Offset = 0.0f;
-	TObjectPtr<UEnemyData> ChosenEnemy;
+	TObjectPtr<UEnemyData> ChosenEnemy;	
 	for (FEnemySpawnInfo Element : EnemyTypes)
 	{
 		if (RandomFloat <= Element.SpawnChance + Offset)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Infrastructure/GenericStructs.h"
 #include "EnemyData.generated.h"
 
 class UCharacterStatData;
@@ -54,4 +55,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector Scale;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FChestDrop> PotentialChests;
 };

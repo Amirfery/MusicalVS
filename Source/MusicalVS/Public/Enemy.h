@@ -45,6 +45,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PostLoad() override;
+	void TryDropChest() const;
 
 public:
 	UPROPERTY(BlueprintReadWrite)

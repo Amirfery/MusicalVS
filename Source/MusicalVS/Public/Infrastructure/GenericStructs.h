@@ -1,4 +1,5 @@
 #pragma once
+#include "Chests/Chest.h"
 
 #include "GenericStructs.generated.h"
 
@@ -145,4 +146,16 @@ struct FPassive : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UPassiveData> PassiveData;
+};
+
+USTRUCT(BlueprintType)
+struct FChestDrop
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AChest> ChestClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin=0.0, ClampMax=100.0))
+	float DropChance;
 };
