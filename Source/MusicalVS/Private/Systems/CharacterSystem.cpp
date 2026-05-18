@@ -6,9 +6,11 @@
 #include "Components/PlayerStatComponent.h"
 #include "DataAssets/AttackData.h"
 #include "DataAssets/PassiveData.h"
+#include "Engine/OverlapResult.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Infrastructure/GenericStructs.h"
+#include "Interfaces/Interactable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Systems/BlessingSystem.h"
 #include "Systems/PassiveSystem.h"
@@ -23,6 +25,7 @@ ACharacterSystem::ACharacterSystem()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Instance = this;
+	CurrentInteractable = nullptr;
 
 	Stats = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("Stats"));
 }
@@ -36,7 +39,7 @@ void ACharacterSystem::BeginPlay()
 	XP = 0;
 	PrevTickEventPercentage = 0.0f;
 	bIsRising = false;
-	
+
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, [this, ]&ACharacterSystem::AoeAttack, 0.5f, true);
 }
@@ -64,7 +67,9 @@ void ACharacterSystem::Tick(float DeltaTime)
 	{
 		RisingElapsedTime += DeltaTime;
 		FVector CurrentLocation = GetActorLocation();
-		SetActorLocation(FVector(CurrentLocation.X, CurrentLocation.Y, (RisingCurve->GetFloatValue(RisingElapsedTime/RisingTime) * RisingHeight) + StartingHeight));
+		SetActorLocation(FVector(CurrentLocation.X, CurrentLocation.Y,
+		                         (RisingCurve->GetFloatValue(RisingElapsedTime / RisingTime) * RisingHeight) +
+		                         StartingHeight));
 	}
 	if (bIsFalling)
 	{
@@ -74,6 +79,8 @@ void ACharacterSystem::Tick(float DeltaTime)
 			OnPlayerLanded.Broadcast();
 		}
 	}
+
+	PerformInteractionTrace();
 }
 
 // Called to bind functionality to input
@@ -86,7 +93,7 @@ void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 {
 	if (Weapons.IsEmpty())
 		MainWeapon = Weapon;
-	
+
 	Weapons.Add(Weapon->Id, Weapon);
 	for (auto Temp : Weapons)
 	{
@@ -149,10 +156,10 @@ TArray<FName> ACharacterSystem::GetWeaponUpgrades()
 	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
 
 	UDataTable* Table = GM->WeaponsDataTable;
-	
+
 	if (!Table)
 		return TArray<FName>();
-	
+
 	TArray<FName> AllRows = Table->GetRowNames();
 	TArray<FName> ValidRows;
 	for (FName Row : AllRows)
@@ -173,10 +180,10 @@ TArray<FName> ACharacterSystem::GetPassiveUpgrades()
 	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
 
 	UDataTable* Table = GM->PassivesDataTable;
-	
+
 	if (!Table)
 		return TArray<FName>();
-	
+
 	TArray<FName> AllRows = Table->GetRowNames();
 	TArray<FName> ValidRows;
 	for (FName Row : AllRows)
@@ -255,10 +262,10 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetBlessingUpgrades()
 	UGameManager* GM = Cast<UGameManager>(GetGameInstance());
 
 	UDataTable* Table = GM->BlessingsDataTable;
-	
+
 	if (!Table)
 		return TArray<FWeaponToUpgrade>();
-	
+
 	TArray<FName> AllRows = Table->GetRowNames();
 	TArray<FName> ValidRows;
 	for (FName Row : AllRows)
@@ -274,7 +281,7 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetBlessingUpgrades()
 	{
 		ValidRows.Sort([](const FName& A, const FName& B)
 		{
-			return FMath::RandRange(0,1) == 0;
+			return FMath::RandRange(0, 1) == 0;
 		});
 		RandomRows.Append(ValidRows.GetData(), 3);
 	}
@@ -286,10 +293,11 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetBlessingUpgrades()
 	TArray<FWeaponToUpgrade> Upgrades;
 	for (FName RowName : RandomRows)
 	{
-		FBlessingWeaponData* RowHandle = Table->FindRow<FBlessingWeaponData>(RowName, TEXT("Get a row from blessings data table."));
+		FBlessingWeaponData* RowHandle = Table->FindRow<FBlessingWeaponData>(
+			RowName, TEXT("Get a row from blessings data table."));
 		Upgrades.Add(FWeaponToUpgrade(RowName, RowHandle->DisplayName, RowHandle->Description, RowHandle->Icon));
 	}
-	
+
 	if (Upgrades.Num() > 0)
 		SetPaused(true);
 
@@ -325,7 +333,7 @@ void ACharacterSystem::SetStartWeapon()
 }
 
 void ACharacterSystem::StartSolo()
-{	
+{
 	CurrentFadeTime = 0.f;
 	RisingElapsedTime = 0.f;
 	GetWorld()->GetTimerManager().SetTimer(
@@ -335,12 +343,12 @@ void ACharacterSystem::StartSolo()
 		0.1f,
 		true
 	);
-	
+
 	for (auto Element : Weapons)
 	{
 		Element.Value->ToggleShouldAttack();
 	}
-	
+
 	MainWeapon->SoloAttack();
 }
 
@@ -369,4 +377,75 @@ void ACharacterSystem::VolumeFadeout()
 	{
 		Element.Value->ChangeVolume(-0.1f / MainWeapon->AttackData->VolumeReductionTime);
 	}
+}
+
+void ACharacterSystem::OnInteractPressed()
+{
+	if (CurrentInteractable.IsValid() && CurrentInteractable->Implements<UInteractable>())
+	{
+		IInteractable::Execute_Interact(CurrentInteractable.Get(), this);
+	}
+}
+
+void ACharacterSystem::PerformInteractionTrace()
+{
+	UE_LOG(LogTemp, Display, TEXT("Start interaction"));
+	TArray<FOverlapResult> OverlapResults;
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
+
+	const bool bHit = GetWorld()->OverlapMultiByChannel(OverlapResults, GetActorLocation(), FQuat::Identity, ECC_GameTraceChannel4, Sphere);
+
+	if (bHit)
+	{
+		AActor* SelectedActor = nullptr;
+		float MinDistance = InteractionRadius;
+		float MaxProduct = FMath::Cos(FMath::DegreesToRadians(InteractionLookAngleThresholdDegree));
+		for (const FOverlapResult& Overlap : OverlapResults)
+		{
+			AActor* HitActor = Overlap.GetActor();
+			if (HitActor && HitActor->Implements<UInteractable>())
+			{
+				auto TargetVector = HitActor->GetActorLocation() - GetActorLocation();
+				float Distance = TargetVector.Length();
+				float Product = GetActorForwardVector().Dot(TargetVector.GetSafeNormal());
+				if (Product > MaxProduct || (Distance < MinDistance && Product == MaxProduct))
+				{
+					MinDistance = Distance;
+					MaxProduct = Product;
+					SelectedActor = HitActor;
+				}
+			}
+		}
+
+		if (SelectedActor)
+		{
+			SelectCandidateInteractable(SelectedActor);
+		}
+		else
+		{
+			UnselectCandidateInteractable();
+		}
+	}
+}
+
+void ACharacterSystem::SelectCandidateInteractable(AActor* Selected)
+{
+	if (CurrentInteractable != Selected)
+	{
+		UnselectCandidateInteractable();
+		CurrentInteractable = Selected;
+		if (CurrentInteractable.IsValid() && CurrentInteractable->Implements<UInteractable>())
+		{
+			IInteractable::Execute_SelectCandidateInteractable(CurrentInteractable.Get());
+		}
+	}
+}
+
+void ACharacterSystem::UnselectCandidateInteractable()
+{
+	if (CurrentInteractable.IsValid() && CurrentInteractable->Implements<UInteractable>())
+	{
+		IInteractable::Execute_UnSelectCandidateInteractable(CurrentInteractable.Get());
+	}
+	CurrentInteractable.Reset();
 }

@@ -13,11 +13,11 @@ AChest::AChest()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ChestMesh"));
 	RootComponent = Mesh;
 	Mesh->SetCollisionProfileName(FName("NoCollision"));
-	
-	CollectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphere"));
-	CollectionSphere->SetupAttachment(RootComponent);
-	CollectionSphere->SetSphereRadius(100.0);
-	CollectionSphere->SetCollisionProfileName(FName("OverlapAllDynamic"));
+}
+
+void AChest::Interact_Implementation(AActor* Interactor)
+{
+	OpenChest();
 }
 
 void AChest::OpenChest()

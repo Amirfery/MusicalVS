@@ -7,6 +7,7 @@
 #include "Infrastructure/GenericStructs.h"
 #include "CharacterSystem.generated.h"
 
+class IInteractable;
 class APassiveSystem;
 class UPlayerStatComponent;
 struct FWeaponToUpgrade;
@@ -14,8 +15,11 @@ class AWeapnSystem;
 class APoolManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelUp);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerLanded);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLoopRestarted);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneXPAdded, float, Amount);
 
 UCLASS()
@@ -109,7 +113,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static ACharacterSystem* GetCharacterInstance() {return Instance;}
+	static ACharacterSystem* GetCharacterInstance() { return Instance; }
 
 	UFUNCTION(BlueprintCallable)
 	void AddWeapon(AWeapnSystem* Weapon);
@@ -153,5 +157,25 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void VolumeFadeout();
+
+	UFUNCTION(BlueprintCallable)
+	void OnInteractPressed();
 	
+	void PerformInteractionTrace();
+	
+	void SelectCandidateInteractable(AActor* Selected);
+	
+	void UnselectCandidateInteractable();
+
+	UPROPERTY()
+	TArray<AActor*> OverlappingInteractables;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> CurrentInteractable;
+
+	UPROPERTY(EditDefaultsOnly, Category="Interaction")
+	float InteractionLookAngleThresholdDegree = 0.7f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float InteractionRadius = 500.0f;
 };
