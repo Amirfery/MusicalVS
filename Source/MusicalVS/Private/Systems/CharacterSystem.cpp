@@ -393,9 +393,9 @@ void ACharacterSystem::PerformInteractionTrace()
 	TArray<FOverlapResult> OverlapResults;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
 
-	const bool bHit = GetWorld()->OverlapMultiByChannel(OverlapResults, GetActorLocation(), FQuat::Identity, ECC_GameTraceChannel4, Sphere);
+	GetWorld()->OverlapMultiByChannel(OverlapResults, GetActorLocation(), FQuat::Identity, ECC_GameTraceChannel4, Sphere);
 
-	if (bHit)
+	if (!OverlapResults.IsEmpty())
 	{
 		AActor* SelectedActor = nullptr;
 		float MinDistance = InteractionRadius;
