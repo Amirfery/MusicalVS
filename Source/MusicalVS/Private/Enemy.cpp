@@ -75,7 +75,13 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (!bIsAlive)
 		return;
-	FVector TargetValue = (PlayerCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal() * Stats->GetMovementSpeed();
+	
+	FVector BoxExtent{};
+	FVector BoxCenter{};
+	GetActorBounds(false, BoxCenter, BoxExtent);
+	FVector TargetLocation = PlayerCharacter->GetActorLocation();
+	TargetLocation.Z = BoxExtent.Z;
+	FVector TargetValue = (TargetLocation - GetActorLocation()).GetSafeNormal() * Stats->GetMovementSpeed();
 	CapsuleComponent->SetPhysicsLinearVelocity(TargetValue);
 	// AddActorWorldOffset(TargetValue * DeltaTime);
 	FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCharacter->GetActorLocation());
