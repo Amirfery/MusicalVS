@@ -71,6 +71,9 @@ public:
 	FSpawnPhase PhaseData;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	ACharacterSystem* Character;
+	
 	bool bIsInCooldown;
 	FTimerHandle CooldownTimer;
 

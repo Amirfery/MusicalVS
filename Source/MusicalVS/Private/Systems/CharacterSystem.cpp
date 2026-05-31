@@ -2,16 +2,19 @@
 
 
 #include "Systems/CharacterSystem.h"
+
+#include "EnemyAudio.h"
+#include "EnemyManager.h"
 #include "GameManager.h"
 #include "Components/PlayerStatComponent.h"
 #include "DataAssets/AttackData.h"
+#include "DataAssets/EnemyData.h"
 #include "DataAssets/PassiveData.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Infrastructure/GenericStructs.h"
 #include "Interfaces/Interactable.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/BlessingSystem.h"
 #include "Systems/PassiveSystem.h"
 #include "Systems/WeapnSystem.h"
@@ -37,7 +40,7 @@ void ACharacterSystem::BeginPlay()
 	Level = 0;
 	NeededXpToLevelUp = 10;
 	XP = 0;
-	PrevTickEventPercentage = 0.0f;
+	PrevTickEventPercentage = 100.0f;
 	bIsRising = false;
 
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
@@ -95,31 +98,29 @@ void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 		MainWeapon = Weapon;
 
 	Weapons.Add(Weapon->Id, Weapon);
-	for (auto Temp : Weapons)
-	{
-		Temp.Value->SetEventPercentage(0);
-		Temp.Value->SetPaused(bIsGamePaused);
-	}
-	for (auto Temp : Blessings)
-	{
-		Temp.Value->SetEventPercentage(0);
-		Temp.Value->SetPaused(bIsGamePaused);
-	}
+	SynchronizeAudio();
 }
 
 void ACharacterSystem::AddBlessing(ABlessingSystem* Blessing)
 {
 	Blessings.Add(Blessing->Id, Blessing);
-	for (auto Temp : Weapons)
+	SynchronizeAudio();
+}
+
+void ACharacterSystem::AddNewPhaseEnemyAudios(TArray<FEnemySpawnInfo> NewPhaseEnemies)
+{
+	for (auto Element : NewPhaseEnemies)
 	{
-		Temp.Value->SetEventPercentage(0);
-		Temp.Value->SetPaused(bIsGamePaused);
+		UEnemyData* EnemyData = Element.EnemyDataAsset;
+		if (EnemyData->SoundEvent != nullptr && !ActiveEnemyAudios.Contains(EnemyData->DisplayName))
+		{
+			TObjectPtr<AEnemyAudio> NewEnemyAudio = GetWorld()->SpawnActor<AEnemyAudio>();
+			NewEnemyAudio->Initialize(EnemyData);
+			NewEnemyAudio->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			ActiveEnemyAudios.Add(EnemyData->DisplayName, NewEnemyAudio);
+		}
 	}
-	for (auto Temp : Weapons)
-	{
-		Temp.Value->SetEventPercentage(0);
-		Temp.Value->SetPaused(bIsGamePaused);
-	}
+	SynchronizeAudio();
 }
 
 void ACharacterSystem::AddXP(int32 Amount)
@@ -315,6 +316,10 @@ void ACharacterSystem::SetPaused(bool Paused)
 	{
 		Blessing.Value->SetPaused(Paused);
 	}
+	for (const TPair<FName, TObjectPtr<AEnemyAudio>>& EnemyAudio : ActiveEnemyAudios)
+	{
+		EnemyAudio.Value->SetPaused(Paused);
+	}
 }
 
 void ACharacterSystem::UpgradeWeapon(FName Id)
@@ -329,7 +334,7 @@ void ACharacterSystem::SetStartWeapon()
 {
 	TObjectPtr<AActor> Actor = GetWorld()->SpawnActor(Cast<UGameManager>(GetGameInstance())->StartCharacter);
 	//Actor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-	AddWeapon(static_cast<AWeapnSystem*>(Actor));
+	AddWeapon(Cast<AWeapnSystem>(Actor));
 }
 
 void ACharacterSystem::StartSolo()
@@ -448,4 +453,23 @@ void ACharacterSystem::UnselectCandidateInteractable()
 		IInteractable::Execute_UnSelectCandidateInteractable(CurrentInteractable.Get());
 	}
 	CurrentInteractable.Reset();
+}
+
+void ACharacterSystem::SynchronizeAudio()
+{
+	for (const auto Temp : Weapons)
+	{
+		Temp.Value->SetEventPercentage(0);
+		Temp.Value->SetPaused(bIsGamePaused);
+	}
+	for (const auto Temp : Weapons)
+	{
+		Temp.Value->SetEventPercentage(0);
+		Temp.Value->SetPaused(bIsGamePaused);
+	}
+	for (const auto Temp : ActiveEnemyAudios)
+	{
+		Temp.Value->SetEventPercentage(0);
+		Temp.Value->SetPaused(bIsGamePaused);
+	}
 }

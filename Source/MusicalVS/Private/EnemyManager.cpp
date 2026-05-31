@@ -21,6 +21,8 @@ AEnemyManager::AEnemyManager()
 void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	Character = ACharacterSystem::GetCharacterInstance() ? ACharacterSystem::GetCharacterInstance() : nullptr;
 	CurrentAliveEnemies = 0;
 	bShouldSpawn = false;
 	GetWorld()->GetSubsystem<ULevelManager>()->OnPhaseChanged.AddDynamic(this, &AEnemyManager::SetNewPhaseData);
@@ -142,6 +144,7 @@ void AEnemyManager::SetNewPhaseData(FSpawnPhase NewPhase)
 	{
 		MaxChance += EnemySpawnInfo.SpawnChance;
 	}
+	Character->AddNewPhaseEnemyAudios(NewPhase.EnemiesSpawnInfo);
 }
 
 void AEnemyManager::SpawnSwarm(FSpawnPhase SpawnPhase)

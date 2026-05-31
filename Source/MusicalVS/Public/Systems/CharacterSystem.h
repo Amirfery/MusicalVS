@@ -7,6 +7,8 @@
 #include "Infrastructure/GenericStructs.h"
 #include "CharacterSystem.generated.h"
 
+struct FEnemySpawnInfo;
+class AEnemyAudio;
 class IInteractable;
 class APassiveSystem;
 class UPlayerStatComponent;
@@ -38,6 +40,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	TMap<FName, TObjectPtr<APassiveSystem>> Passives;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true))
+	TMap<FName, TObjectPtr<AEnemyAudio>> ActiveEnemyAudios;
 
 	FTimerHandle AutoAttackTimer;
 	FTimerHandle VolumeFadeTimer;
@@ -120,6 +125,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddBlessing(ABlessingSystem* Blessing);
+	
+	UFUNCTION(BlueprintCallable)
+	void AddNewPhaseEnemyAudios(TArray<FEnemySpawnInfo> NewPhaseEnemies);
+	
+	UFUNCTION(BlueprintCallable)
+	void SynchronizeAudio();
 
 	UFUNCTION(BlueprintCallable)
 	void AddXP(int32 Amount);

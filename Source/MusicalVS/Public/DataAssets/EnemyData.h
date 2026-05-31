@@ -58,4 +58,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FChestDrop> PotentialChests;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UFMODEvent> SoundEvent;
 };
