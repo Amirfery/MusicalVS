@@ -6,6 +6,7 @@
 #include "EnemyAudio.h"
 #include "EnemyManager.h"
 #include "GameManager.h"
+#include "Animation/CharacterAnimInstance.h"
 #include "Components/PlayerStatComponent.h"
 #include "DataAssets/AttackData.h"
 #include "DataAssets/EnemyData.h"
@@ -42,7 +43,7 @@ void ACharacterSystem::BeginPlay()
 	XP = 0;
 	PrevTickEventPercentage = 100.0f;
 	bIsRising = false;
-
+	CharacterAnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, this, &ACharacterSystem::FindAndAttackNearestEnemy, 0.5f, true);
 	// GetWorldTimerManager().SetTimer(AutoAttackTimer, [this, ]&ACharacterSystem::AoeAttack, 0.5f, true);
 }

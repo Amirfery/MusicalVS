@@ -69,6 +69,7 @@ void ABassWeapon::Attack_Implementation()
 
 void ABassWeapon::Upgrade_Implementation()
 {
+	Super::Upgrade_Implementation();
 	FAttackLevelStruct LevelUp = AttackData->LevelUps[Level];
 	Damage = Damage + (Damage * LevelUp.DamageUp);
 	EffectTime = EffectTime + (EffectTime * LevelUp.DamageUp);
