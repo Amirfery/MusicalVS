@@ -7,6 +7,7 @@
 #include "Infrastructure/GenericStructs.h"
 #include "CharacterSystem.generated.h"
 
+class UCharacterAnimInstance;
 struct FEnemySpawnInfo;
 class AEnemyAudio;
 class IInteractable;
@@ -101,6 +102,9 @@ public:
 	FVector FallingDestination;
 	UPROPERTY(Transient)
 	float FallingSpeed;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<UCharacterAnimInstance> CharacterAnimInstance;
 
 public:
 	// Sets default values for this character's properties

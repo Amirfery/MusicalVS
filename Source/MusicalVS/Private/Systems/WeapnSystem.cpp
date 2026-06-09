@@ -2,6 +2,8 @@
 
 
 #include "Systems/WeapnSystem.h"
+
+#include "Animation/CharacterAnimInstance.h"
 #include "DataAssets/AttackData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
@@ -193,6 +195,7 @@ void AWeapnSystem::UpdateRotationAroundCharacter(float DeltaTime)
 
 void AWeapnSystem::Upgrade_Implementation()
 {
+	Character->CharacterAnimInstance->CharacterLevel = Level + 1;
 }
 
 void AWeapnSystem::Attack_Implementation()
