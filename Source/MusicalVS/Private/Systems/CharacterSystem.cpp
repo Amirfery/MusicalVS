@@ -120,7 +120,6 @@ void ACharacterSystem::AddNewPhaseEnemyAudios(TArray<FEnemySpawnInfo> NewPhaseEn
 			ActiveEnemyAudios.Add(EnemyData->DisplayName, NewEnemyAudio);
 		}
 	}
-	SynchronizeAudio();
 }
 
 void ACharacterSystem::AddXP(int32 Amount)
