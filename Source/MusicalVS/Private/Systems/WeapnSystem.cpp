@@ -159,6 +159,18 @@ float AWeapnSystem::GetEventPercentage()
 	return static_cast<float>(FmodAudioComp->GetTimelinePosition()) / FmodAudioComp->GetLength(); 
 }
 
+void AWeapnSystem::PlayAnimation()
+{
+	TObjectPtr<UAnimMontage> MontageToPlay = Montages[FMath::Clamp<int32>(Level, 0, Montages.Num() - 1)];
+	Character->CharacterAnimInstance->Montage_Play(MontageToPlay, 1, EMontagePlayReturnType::MontageLength, GetEventPercentage() * MontageToPlay->GetPlayLength());
+}
+
+void AWeapnSystem::SetMainWeapon()
+{
+	bIsMainWeapon = true;
+	Character->OnLoopRestarted.AddDynamic(this, &AWeapnSystem::PlayAnimation);
+}
+
 void AWeapnSystem::SetPaused(const bool Paused)
 {
 	bShouldAttack = !Paused;
@@ -195,7 +207,12 @@ void AWeapnSystem::UpdateRotationAroundCharacter(float DeltaTime)
 
 void AWeapnSystem::Upgrade_Implementation()
 {
-	Character->CharacterAnimInstance->CharacterLevel = Level + 1;
+	if (bIsMainWeapon)
+	{
+		TObjectPtr<UAnimMontage> MontageToPlay = Montages[FMath::Clamp<int32>(Level + 1, 0, Montages.Num() - 1)];
+		Character->CharacterAnimInstance->Montage_Play(MontageToPlay, 1, EMontagePlayReturnType::MontageLength, GetEventPercentage() * MontageToPlay->GetPlayLength());
+	}
+	
 }
 
 void AWeapnSystem::Attack_Implementation()

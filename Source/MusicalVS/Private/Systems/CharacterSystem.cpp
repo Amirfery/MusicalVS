@@ -96,7 +96,11 @@ void ACharacterSystem::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void ACharacterSystem::AddWeapon(AWeapnSystem* Weapon)
 {
 	if (Weapons.IsEmpty())
+	{
 		MainWeapon = Weapon;
+		MainWeapon->SetMainWeapon();
+	}
+		
 
 	Weapons.Add(Weapon->Id, Weapon);
 	SynchronizeAudio();

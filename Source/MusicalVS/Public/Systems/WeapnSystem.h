@@ -56,6 +56,12 @@ protected:
 
 	UPROPERTY(Transient)
 	bool bIsInSoloMode;
+	
+	UPROPERTY(Transient)
+	bool bIsMainWeapon;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TObjectPtr<UAnimMontage>> Montages;
 
 public:
 	UPROPERTY(EditDefaultsOnly)
@@ -123,6 +129,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetEventPercentage();
 
+	UFUNCTION()
+	void PlayAnimation();
+	void SetMainWeapon();
 	void SetPaused(bool Paused);
 	void ToggleShouldAttack();
 	void SetEventPercentage(float Percentage);
