@@ -20,7 +20,7 @@ AEnemy::AEnemy()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	Stats = CreateDefaultSubobject<UEnemyStatComponent>(TEXT("Stats"));
-	
+	Tags.Add(FName("Enemy"));
 }
 
 void AEnemy::Init_Implementation(APoolManager* PoolManager)
@@ -38,6 +38,7 @@ void AEnemy::BeginPlay()
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
 	Stats->OnEnemyDied.AddDynamic(this, &AEnemy::Die);
+	CapsuleComponent->OnComponentHit.AddDynamic(this, &AEnemy::OnCapsuleHit);
 }
 
 void AEnemy::PostLoad()
@@ -70,28 +71,58 @@ void AEnemy::TryDropChest() const
 	}
 }
 
+void AEnemy::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                          FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (!OtherActor || OtherActor == this || OtherActor == PlayerCharacter || OtherActor->ActorHasTag(FName("Enemy")))
+		return;
+	if (FMath::Abs(Hit.Normal.Z) < 0.5f)
+	{
+		FVector ForwardVector = GetActorForwardVector();
+		FVector SurfaceDirection = -Hit.Normal; 
+		SurfaceDirection.Z = 0.f;
+		SurfaceDirection.Normalize();
+		float ForwardDot = FVector::DotProduct(ForwardVector, SurfaceDirection);
+		if (ForwardDot > 0.7f)
+		{
+			// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Here %f"), Stats->GetMovementSpeed()));
+			bShouldClimb = true;
+		}
+	}
+}
+
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!bIsAlive)
+
+	if (!bIsAlive || UGameplayStatics::IsGamePaused(GetWorld()))
 		return;
-	
-	FVector BoxExtent{};
-	FVector BoxCenter{};
-	GetActorBounds(false, BoxCenter, BoxExtent);
-	FVector TargetLocation = PlayerCharacter->GetActorLocation();
-	TargetLocation.Z = BoxExtent.Z;
-	FVector TargetValue = (TargetLocation - GetActorLocation()).GetSafeNormal() * Stats->GetMovementSpeed();
-	CapsuleComponent->SetPhysicsLinearVelocity(TargetValue);
-	// AddActorWorldOffset(TargetValue * DeltaTime);
-	FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCharacter->GetActorLocation());
-	Mesh->SetRelativeRotation(FRotator(0, NewRotator.Yaw - 90.0f, 0));
-	FVector DistanceVec = PlayerCharacter->GetActorLocation() - GetActorLocation();
-	float Distance = DistanceVec.Length();
-	if (Distance > MaxDistance)
+
+	FVector ToPlayer = PlayerCharacter->GetActorLocation() - GetActorLocation();
+	ToPlayer.Z = 0.f;
+	ToPlayer.Normalize();
+
+	FVector CurrentVelocity = CapsuleComponent->GetPhysicsLinearVelocity();
+
+	if (bShouldClimb)
 	{
-		AEnemyManager::GetInstance()->RelocateEnemy(this);
+		CapsuleComponent->SetPhysicsLinearVelocity(FVector::UnitZ() * EnemyData->ClimbSpeed);
+		bShouldClimb = false;
 	}
+	else if (CurrentVelocity.Size2D() < EnemyData->Speed)
+	{
+		CapsuleComponent->AddForce(EnemyData->MoveForce * ToPlayer);
+	}
+
+	// Rotation
+	FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(
+		GetActorLocation(), PlayerCharacter->GetActorLocation());
+	Mesh->SetRelativeRotation(FRotator(0, NewRotator.Yaw - 90.f, 0));
+
+	// Relocate
+	float Distance = FVector::Dist(PlayerCharacter->GetActorLocation(), GetActorLocation());
+	if (Distance > MaxDistance)
+		AEnemyManager::GetInstance()->RelocateEnemy(this);
 }
 
 void AEnemy::Die()

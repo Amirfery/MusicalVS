@@ -46,6 +46,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PostLoad() override;
 	void TryDropChest() const;
+	
+	UFUNCTION()
+	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 public:
 	UPROPERTY(BlueprintReadWrite)
@@ -86,4 +89,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 LoopCounter;
+	
+	UPROPERTY(BlueprintReadOnly)
+	bool bShouldClimb;
+	
+	UPROPERTY(BlueprintReadWrite)
+	float ProbDistance;
 };

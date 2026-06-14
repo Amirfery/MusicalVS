@@ -191,7 +191,7 @@ void AEnemyManager::RelocateInstantEnemies(AEnemy* Enemy, const FVector& Center,
 	const FVector Offset(
 		FMath::Cos(Angle) * Radius,
 		FMath::Sin(Angle) * Radius,
-		BoxExtent.Z
+		100
 	);
 
 	Enemy->SetActorLocation(Center + Offset, false, nullptr, ETeleportType::TeleportPhysics);

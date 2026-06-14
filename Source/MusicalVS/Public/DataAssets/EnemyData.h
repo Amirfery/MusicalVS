@@ -61,4 +61,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UFMODEvent> SoundEvent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MoveForce;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float ClimbSpeed;
 };
