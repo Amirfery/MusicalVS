@@ -52,6 +52,9 @@ private:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLevelUp OnLevelUp;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOneXPAdded OnSoulNoteAdded;
 
 	UPROPERTY(BlueprintAssignable)
 	FOneXPAdded OnXPAdded;
@@ -64,8 +67,16 @@ private:
 
 	UPROPERTY(Transient)
 	float RisingElapsedTime;
+	
+	UPROPERTY(Transient)
+	FTimerHandle SoulNoteToXpTimerHandle;
+	
+	UPROPERTY(Transient)
+	int32 InitialSoulNoteAmount;
 
 public:
+	UPROPERTY(BlueprintReadWrite)
+	int32 SoulNote;
 	UPROPERTY(BlueprintReadWrite)
 	int32 XP;
 	UPROPERTY(BlueprintReadWrite)
@@ -137,7 +148,7 @@ public:
 	void SynchronizeAudio();
 
 	UFUNCTION(BlueprintCallable)
-	void AddXP(int32 Amount);
+	void AddSoulNote(int32 Amount);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FName> GetWeaponUpgrades();
@@ -181,6 +192,12 @@ private:
 	void SelectCandidateInteractable(AActor* Selected);
 	
 	void UnselectCandidateInteractable();
+	
+	UFUNCTION(BlueprintCallable)
+	void AddXP(int32 Amount);
+	
+	UFUNCTION(BlueprintCallable)
+	void PerformUpgraderRitual();
 
 	UPROPERTY()
 	TArray<AActor*> OverlappingInteractables;

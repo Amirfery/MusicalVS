@@ -47,7 +47,7 @@ void AXpGem::Tick(float DeltaTime)
 
 void AXpGem::CollidedWithPlayer(ACharacterSystem* PlayerSystem)
 {
-	PlayerSystem->AddXP(XpAmount);
+	PlayerSystem->AddSoulNote(XpAmount);
 	bIsMovingToPlayer = false;
 	FreeItem();
 }

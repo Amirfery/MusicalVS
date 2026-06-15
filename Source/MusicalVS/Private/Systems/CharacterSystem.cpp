@@ -16,6 +16,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Infrastructure/GenericStructs.h"
 #include "Interfaces/Interactable.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/BlessingSystem.h"
 #include "Systems/PassiveSystem.h"
 #include "Systems/WeapnSystem.h"
@@ -40,6 +41,7 @@ void ACharacterSystem::BeginPlay()
 	Super::BeginPlay();
 	Level = 0;
 	NeededXpToLevelUp = 10;
+	SoulNote = 0;
 	XP = 0;
 	PrevTickEventPercentage = 100.0f;
 	bIsRising = false;
@@ -127,6 +129,12 @@ void ACharacterSystem::AddNewPhaseEnemyAudios(TArray<FEnemySpawnInfo> NewPhaseEn
 	}
 }
 
+void ACharacterSystem::AddSoulNote(const int32 Amount)
+{
+	SoulNote += Amount;
+	OnSoulNoteAdded.Broadcast(SoulNote);
+}
+
 void ACharacterSystem::AddXP(int32 Amount)
 {
 	XP += Amount;
@@ -154,6 +162,26 @@ void ACharacterSystem::AddXP(int32 Amount)
 			NeededXpToLevelUp = 2400 + Level * 16;
 		}
 	}
+}
+
+void ACharacterSystem::PerformUpgraderRitual()
+{
+	InitialSoulNoteAmount = SoulNote;
+	GetWorld()->GetTimerManager().SetTimer(SoulNoteToXpTimerHandle, FTimerDelegate::CreateLambda([this]
+	{
+		if (SoulNote > 0)
+		{
+			const float Progress = 1.f - (float)SoulNote / InitialSoulNoteAmount;
+
+			const int32 Amount = FMath::Lerp(1, SoulNote, Progress);
+			AddXP(Amount);
+			AddSoulNote(-1 * Amount);
+		} 
+		else
+		{
+			GetWorld()->GetTimerManager().ClearTimer(SoulNoteToXpTimerHandle);
+		}
+	}), 0.1f, true);
 }
 
 TArray<FName> ACharacterSystem::GetWeaponUpgrades()
