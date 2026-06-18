@@ -47,6 +47,8 @@ public:
 	FVector GetRandomPointAroundPlayer(const FVector& PlayerLocation, float MinDistance, float MaxDistance);
 	void RelocateInstantEnemies(AEnemy* Enemy, const FVector& Center, float InnerRadius, float OuterRadius);
 	void SpawnRandomInstant(FSpawnPhase SpawnPhase);
+	
+	TSet<TObjectPtr<AEnemy>> GetAliveEnemies(FName EnemyName);
 
 public:
 	UPROPERTY(EditDefaultsOnly)
@@ -69,6 +71,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FSpawnPhase PhaseData;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float UpdateVolumeInterval = 1.0f;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -88,9 +93,6 @@ private:
 	int32 CurrentAliveEnemies;
 
 	UPROPERTY(Transient)
-	TSet<TObjectPtr<AEnemy>> AliveEnemies;
-
-	UPROPERTY(Transient)
 	bool bIsFreeze;
 
 	UPROPERTY(Transient)
@@ -98,4 +100,6 @@ private:
 
 	UPROPERTY(Transient)
 	float MaxChance;
+	
+	TMap<FName, TSet<TObjectPtr<AEnemy>>> AliveEnemies;
 };

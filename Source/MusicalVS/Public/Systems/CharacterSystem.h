@@ -83,6 +83,10 @@ public:
 	int32 Level;
 	UPROPERTY(BlueprintReadWrite)
 	int32 NeededXpToLevelUp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHearingDistance = 5000;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MinHearingDistance = 300;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<AWeapnSystem> MainWeapon;

@@ -116,7 +116,8 @@ void ACharacterSystem::AddBlessing(ABlessingSystem* Blessing)
 
 void ACharacterSystem::AddNewPhaseEnemyAudios(TArray<FEnemySpawnInfo> NewPhaseEnemies)
 {
-	for (auto Element : NewPhaseEnemies)
+	TMap<FName, TObjectPtr<AEnemyAudio>> NewEnemyAudios;
+	for (auto& Element : NewPhaseEnemies)
 	{
 		UEnemyData* EnemyData = Element.EnemyDataAsset;
 		if (EnemyData->SoundEvent != nullptr && !ActiveEnemyAudios.Contains(EnemyData->DisplayName))
@@ -124,9 +125,22 @@ void ACharacterSystem::AddNewPhaseEnemyAudios(TArray<FEnemySpawnInfo> NewPhaseEn
 			TObjectPtr<AEnemyAudio> NewEnemyAudio = GetWorld()->SpawnActor<AEnemyAudio>();
 			NewEnemyAudio->Initialize(EnemyData);
 			NewEnemyAudio->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-			ActiveEnemyAudios.Add(EnemyData->DisplayName, NewEnemyAudio);
+			NewEnemyAudios.Add(EnemyData->DisplayName, NewEnemyAudio);
+		}
+		else
+		{
+			NewEnemyAudios.Add(EnemyData->DisplayName, ActiveEnemyAudios.Find(EnemyData->DisplayName)->Get());
 		}
 	}
+	
+	for (auto& AudioPair : ActiveEnemyAudios)
+	{
+		if (!NewEnemyAudios.Contains(AudioPair.Key))
+		{
+			AudioPair.Value->Stop();
+		}
+	}
+	ActiveEnemyAudios = NewEnemyAudios;
 }
 
 void ACharacterSystem::AddSoulNote(const int32 Amount)

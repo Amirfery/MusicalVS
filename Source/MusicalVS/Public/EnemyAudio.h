@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "EnemyAudio.generated.h"
 
+class ACharacterSystem;
+class AEnemyManager;
 class UEnemyData;
 class UFMODAudioComponent;
 
@@ -16,6 +18,12 @@ class MUSICALVS_API AEnemyAudio : public AActor
 	
 	UFUNCTION()
 	void StartPlaying();
+	
+	UFUNCTION()
+	void StopPlaying();
+	
+	UFUNCTION()
+	void UpdateVolume();
 
 public:
 	// Sets default values for this actor's properties
@@ -41,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeVolume(float Volume);
 	
+	UFUNCTION(BlueprintCallable)
+	void Stop();
+	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudio;
@@ -51,5 +62,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UEnemyData> EnemyData;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<AEnemyManager> EnemyManager;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<ACharacterSystem> Character;
+	
+private:
+	FTimerHandle TimerHandle;
 };

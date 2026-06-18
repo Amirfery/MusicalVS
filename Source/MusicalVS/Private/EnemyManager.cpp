@@ -72,7 +72,7 @@ void AEnemyManager::Tick(float DeltaSeconds)
 	}
 	else
 		Enemy->Unfreeze();
-	AliveEnemies.Add(Enemy);
+	AliveEnemies.FindOrAdd(Enemy->EnemyData->DisplayName).Add(Enemy);
 }
 
 void AEnemyManager::PostInitializeComponents()
@@ -95,23 +95,29 @@ void AEnemyManager::RelocateEnemy(APoolItem* Enemy) const
 void AEnemyManager::EnemyDied(AEnemy* Enemy)
 {
 	CurrentAliveEnemies--;
-	AliveEnemies.Remove(Enemy);
+	AliveEnemies.FindOrAdd(Enemy->EnemyData->DisplayName).Remove(Enemy);
 }
 
 void AEnemyManager::FreezeEnemies()
 {
 	GetWorld()->GetTimerManager().ClearTimer(FreezeTimer);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->bEnemyCanTick = false;
-	for (AEnemy* Actor : AliveEnemies)
+	for (auto& pair : AliveEnemies)
 	{
-		Actor->Freeze();
+		for (const TObjectPtr<AEnemy>& Enemy : pair.Value)
+		{
+			Enemy->Freeze();
+		}
 	}
 	bIsFreeze = true;
 	GetWorld()->GetTimerManager().SetTimer(FreezeTimer, FTimerDelegate::CreateLambda([this]()
 	{
-		for (AEnemy* Actor : AliveEnemies)
+		for (auto& pair : AliveEnemies)
 		{
-			Actor->Unfreeze();
+			for (const TObjectPtr<AEnemy>& Enemy : pair.Value)
+			{
+				Enemy->Unfreeze();
+			}
 		}
 		GetWorld()->GetSubsystem<UTickSubsystem>()->bEnemyCanTick = true;
 		bIsFreeze = false;
@@ -161,7 +167,7 @@ void AEnemyManager::SpawnSwarm(FSpawnPhase SpawnPhase)
 			Enemy->Speed *= 10;
 			RelocateInstantEnemies(Enemy, ClusterCenter, 0.f, 1000.f);
 			CurrentAliveEnemies++;
-			AliveEnemies.Add(Enemy);
+			AliveEnemies.FindOrAdd(Enemy->EnemyData->DisplayName).Add(Enemy);
 		}
 	}
 }
@@ -209,7 +215,12 @@ void AEnemyManager::SpawnRandomInstant(FSpawnPhase SpawnPhase)
 			Enemy->Initialize(EnemySpawnInfo.EnemyDataAsset);
 			RelocateEnemy(Enemy);
 			CurrentAliveEnemies++;
-			AliveEnemies.Add(Enemy);
+			AliveEnemies.FindOrAdd(Enemy->EnemyData->DisplayName).Add(Enemy);
 		}
 	}
+}
+
+TSet<TObjectPtr<AEnemy>> AEnemyManager::GetAliveEnemies(FName EnemyName)
+{
+	return AliveEnemies.FindOrAdd(EnemyName);
 }

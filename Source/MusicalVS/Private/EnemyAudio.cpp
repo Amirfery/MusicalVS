@@ -3,16 +3,47 @@
 
 #include "EnemyAudio.h"
 
+#include "Enemy.h"
+#include "EnemyManager.h"
 #include "FMODAudioComponent.h"
 #include "DataAssets/EnemyData.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/CharacterSystem.h"
 
 
 void AEnemyAudio::StartPlaying()
 {
-	ChangeVolume(1.0);
 	FModAudio->Play();
 	ACharacterSystem::GetCharacterInstance()->OnLoopRestarted.RemoveDynamic(this, &AEnemyAudio::StartPlaying);
+}
+
+void AEnemyAudio::StopPlaying()
+{
+	FModAudio->Stop();
+	ACharacterSystem::GetCharacterInstance()->OnLoopRestarted.RemoveDynamic(this, &AEnemyAudio::StartPlaying);
+	Destroy();
+}
+
+void AEnemyAudio::UpdateVolume()
+{
+	TSet<TObjectPtr<AEnemy>> Enemies = EnemyManager->GetAliveEnemies(EnemyData->DisplayName);
+	float MinDistance = TNumericLimits<float>::Max();
+	FVector MinToEnemy = FVector::ZeroVector;
+	FVector CharacterLocation = Character->GetActorLocation();
+	for (TObjectPtr<AEnemy> Enemy : Enemies)
+	{
+		FVector ToEnemy = Enemy->GetActorLocation() - CharacterLocation;
+		float Distance = ToEnemy.SizeSquared();
+		if (Distance < MinDistance)
+		{
+			MinDistance = Distance;
+			MinToEnemy = ToEnemy;
+		}
+	}
+	MinDistance = FMath::Clamp(FMath::Sqrt(MinDistance), Character->MinHearingDistance, Character->MaxHearingDistance);
+	float Volume = (Character->MaxHearingDistance - MinDistance) / (Character->MaxHearingDistance - Character->MinHearingDistance);
+	ChangeVolume(Volume);
+	SetActorLocation(CharacterLocation + MinToEnemy.GetSafeNormal() * FMath::Min(Character->MinHearingDistance, MinDistance));
 }
 
 // Sets default values
@@ -31,6 +62,8 @@ AEnemyAudio::AEnemyAudio()
 void AEnemyAudio::BeginPlay()
 {
 	Super::BeginPlay();
+	EnemyManager = AEnemyManager::GetInstance();
+	Character = ACharacterSystem::GetCharacterInstance();
 }
 
 // Called every frame
@@ -44,6 +77,7 @@ void AEnemyAudio::Initialize(UEnemyData* NewEnemyData)
 	EnemyData = NewEnemyData;
 	FModAudio->SetEvent(EnemyData->SoundEvent);
 	ACharacterSystem::GetCharacterInstance()->OnLoopRestarted.AddDynamic(this, &AEnemyAudio::StartPlaying);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AEnemyAudio::UpdateVolume, EnemyManager->UpdateVolumeInterval, true);
 }
 
 void AEnemyAudio::SetPaused(const bool Paused)
@@ -60,5 +94,10 @@ void AEnemyAudio::ChangeVolume(const float Volume)
 {
 	CurrentVolume = FMath::Clamp(Volume, 0.0f, 1.0f);
 	FModAudio->SetParameter(FName("Volume"), CurrentVolume);
+}
+
+void AEnemyAudio::Stop()
+{
+	ACharacterSystem::GetCharacterInstance()->OnLoopRestarted.AddDynamic(this, &AEnemyAudio::StopPlaying);
 }
 
