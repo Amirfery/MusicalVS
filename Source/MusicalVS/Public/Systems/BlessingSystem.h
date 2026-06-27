@@ -53,5 +53,6 @@ public:
 	void Upgrade();
 
 	void SetPaused(bool Paused);
+	void SetLowPass(float lowPass);
 	void SetEventPercentage(float Percentage);
 };

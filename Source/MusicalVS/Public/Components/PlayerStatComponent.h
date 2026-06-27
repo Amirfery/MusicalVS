@@ -7,6 +7,8 @@
 
 class UCharacterStatData;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDied);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class MUSICALVS_API UPlayerStatComponent : public UActorComponent
 {
@@ -32,6 +34,9 @@ public:
 	float GreedC;
 	float CurseC;
 	float MagnetC;
+	
+	UPROPERTY(BlueprintAssignable)
+	FCharacterDied OnCharacterDied;
 
 protected:
 	virtual void BeginPlay() override;

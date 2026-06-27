@@ -149,7 +149,7 @@ struct FPassive : public FTableRowBase
 };
 
 USTRUCT(BlueprintType)
-struct FChestDrop
+struct FChestDrop2
 {
 	GENERATED_BODY()
 	

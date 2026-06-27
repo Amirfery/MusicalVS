@@ -44,6 +44,9 @@ public:
 	void SetPaused(bool Paused);
 	
 	UFUNCTION(BlueprintCallable)
+	void SetLowPass(float lowPass);
+	
+	UFUNCTION(BlueprintCallable)
 	void SetEventPercentage(float Percentage);
 	
 	UFUNCTION(BlueprintCallable)

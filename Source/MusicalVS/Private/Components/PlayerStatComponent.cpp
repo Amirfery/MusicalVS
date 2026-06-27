@@ -2,6 +2,7 @@
 
 #include "GameManager.h"
 #include "DataAssets/StatData.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 UPlayerStatComponent::UPlayerStatComponent()
 {
@@ -98,12 +99,18 @@ float UPlayerStatComponent::GetMagnet() const
 
 void UPlayerStatComponent::DecreaseHealth(const float Amount)
 {
-	CurrentHealth -= Amount;
+	float PrevHealth = CurrentHealth;
+	CurrentHealth = FMath::Clamp(PrevHealth	 - Amount, 0, BaseStat->MaxHealth);
+	if (CurrentHealth == 0)
+	{
+		OnCharacterDied.Broadcast();
+	}
 }
 
 void UPlayerStatComponent::IncreaseHealth(const float Amount)
 {
-	CurrentHealth += Amount;
+	float PrevHealth = CurrentHealth;
+	CurrentHealth = FMath::Clamp(PrevHealth + Amount, 0, BaseStat->MaxHealth);
 }
 
 

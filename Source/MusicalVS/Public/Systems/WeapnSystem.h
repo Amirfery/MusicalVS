@@ -133,6 +133,7 @@ public:
 	void PlayAnimation();
 	void SetMainWeapon();
 	void SetPaused(bool Paused);
+	void SetLowPass(float lowPass);
 	void ToggleShouldAttack();
 	void SetEventPercentage(float Percentage);
 	void ChangeVolume(float Volume);

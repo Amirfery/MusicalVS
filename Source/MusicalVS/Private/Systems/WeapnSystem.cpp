@@ -177,6 +177,11 @@ void AWeapnSystem::SetPaused(const bool Paused)
 	FmodAudioComp->SetPaused(Paused);
 }
 
+void AWeapnSystem::SetLowPass(float lowPass)
+{
+	FmodAudioComp->SetParameter(FName(TEXT("LowPass")), lowPass);
+}
+
 void AWeapnSystem::ToggleShouldAttack()
 {
 	bShouldAttack = !bShouldAttack;

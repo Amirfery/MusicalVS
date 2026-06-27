@@ -16,7 +16,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Infrastructure/GenericStructs.h"
 #include "Interfaces/Interactable.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Systems/BlessingSystem.h"
 #include "Systems/PassiveSystem.h"
 #include "Systems/WeapnSystem.h"
@@ -297,7 +296,7 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetUpgrades(const int Count)
 
 	if (!Upgrades.IsEmpty())
 	{
-		SetPaused(true);
+		SetLowpass(true);
 	}
 
 	return Upgrades;
@@ -346,7 +345,7 @@ TArray<FWeaponToUpgrade> ACharacterSystem::GetBlessingUpgrades()
 	}
 
 	if (Upgrades.Num() > 0)
-		SetPaused(true);
+		SetLowpass(true);
 
 	return Upgrades;
 }
@@ -365,6 +364,23 @@ void ACharacterSystem::SetPaused(bool Paused)
 	for (const TPair<FName, TObjectPtr<AEnemyAudio>>& EnemyAudio : ActiveEnemyAudios)
 	{
 		EnemyAudio.Value->SetPaused(Paused);
+	}
+}
+
+void ACharacterSystem::SetLowpass(bool isLowPass)
+{
+	float lowPass = isLowPass ? 1.0f : 0.0f;
+	for (const TPair<FName, TObjectPtr<AWeapnSystem>>& Weapon : Weapons)
+	{
+		Weapon.Value->SetLowPass(lowPass);
+	}
+	for (const TPair<FName, TObjectPtr<ABlessingSystem>>& Blessing : Blessings)
+	{
+		Blessing.Value->SetLowPass(lowPass);
+	}
+	for (const TPair<FName, TObjectPtr<AEnemyAudio>>& EnemyAudio : ActiveEnemyAudios)
+	{
+		EnemyAudio.Value->SetLowPass(lowPass);
 	}
 }
 

@@ -54,6 +54,11 @@ void ABlessingSystem::SetPaused(bool Paused)
 	FmodAudioComp->SetPaused(Paused);
 }
 
+void ABlessingSystem::SetLowPass(float lowPass)
+{
+	FmodAudioComp->SetParameter(FName(TEXT("LowPass")), lowPass);
+}
+
 void ABlessingSystem::SetEventPercentage(float Percentage)
 {
 	FmodAudioComp->SetTimelinePosition(FmodAudioComp->GetLength() * Percentage);

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Drops/Drop.h"
 #include "Engine/DataAsset.h"
 #include "Infrastructure/GenericStructs.h"
 #include "EnemyData.generated.h"
@@ -57,7 +58,7 @@ public:
 	FVector Scale;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<FChestDrop> PotentialChests;
+	TArray<FChestDrop2> PotentialChests;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UFMODEvent> SoundEvent;
@@ -67,4 +68,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float ClimbSpeed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Range;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced)
+	TArray<TObjectPtr<UDrop>> Drops;
 };

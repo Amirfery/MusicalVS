@@ -4,12 +4,12 @@
 #include "Enemy.h"
 
 #include "EnemyManager.h"
-#include "PoolSystem.h"
 #include "TickSubsystem.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/EnemyStatComponent.h"
 #include "DataAssets/EnemyData.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/Damageable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Systems/CharacterSystem.h"
@@ -58,7 +58,7 @@ void AEnemy::TryDropChest() const
 	
 	float RandomFloat = FMath::RandRange(0.0f, 100.0f);
 	float CumulativeChance = 0.0;
-	for (const FChestDrop& ChestDrop : EnemyData->PotentialChests)
+	for (const FChestDrop2& ChestDrop : EnemyData->PotentialChests)
 	{
 		CumulativeChance += ChestDrop.DropChance;
 		if (RandomFloat <= CumulativeChance)
@@ -100,6 +100,11 @@ void AEnemy::Tick(float DeltaTime)
 
 	FVector ToPlayer = PlayerCharacter->GetActorLocation() - GetActorLocation();
 	ToPlayer.Z = 0.f;
+	if (ToPlayer.SizeSquared() < FMath::Square(EnemyData->Range))
+	{
+		if (PlayerCharacter->Implements<UDamageable>())
+			IDamageable::Execute_TakeDamage(PlayerCharacter, Damage * DeltaTime);
+	}
 	ToPlayer.Normalize();
 
 	FVector CurrentVelocity = CapsuleComponent->GetPhysicsLinearVelocity();
@@ -123,22 +128,31 @@ void AEnemy::Tick(float DeltaTime)
 	float Distance = FVector::Dist(PlayerCharacter->GetActorLocation(), GetActorLocation());
 	if (Distance > MaxDistance)
 		AEnemyManager::GetInstance()->RelocateEnemy(this);
-}
+} 
 
 void AEnemy::Die()
 {
 	bIsAlive = false;
-	APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
-	
-	float RandomNum = FMath::RandRange(0.f, 100.f);
-	if (RandomNum < 0.001)
+	// APoolSystem::PoolSystemInstance->PoolInstances[XpPoolSystemName]->GetNewItem()->SetActorLocation(GetActorLocation());
+	//
+	// float RandomNum = FMath::RandRange(0.f, 100.f);
+	// if (RandomNum < 0.001)
+	// {
+	// 	APoolItem* Item = APoolSystem::PoolSystemInstance->PoolInstances[FName("PowerUp")]->GetNewItem();
+	// 	Item->SetFloatValues({static_cast<float>(FMath::RandRange(0, 1))});
+	// 	Item->SetActorLocation(GetActorLocation());
+	// }
+	//
+	// TryDropChest();
+
+	for (const TObjectPtr<UDrop> Drop : EnemyData->Drops)
 	{
-		APoolItem* Item = APoolSystem::PoolSystemInstance->PoolInstances[FName("PowerUp")]->GetNewItem();
-		Item->SetFloatValues({static_cast<float>(FMath::RandRange(0, 1))});
-		Item->SetActorLocation(GetActorLocation());
+		float RandomNum = FMath::FRand();
+		if (RandomNum < Drop->Chance)
+		{
+			Drop->Drop(GetWorld(), GetActorLocation());
+		}
 	}
-	
-	TryDropChest();
 	
 	FreeItem();
 	AEnemyManager::GetInstance()->EnemyDied(this);

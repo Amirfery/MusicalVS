@@ -153,6 +153,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddSoulNote(int32 Amount);
+	
+	UFUNCTION(BlueprintCallable)
+	void AddXP(int32 Amount);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FName> GetWeaponUpgrades();
@@ -168,6 +171,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetPaused(bool Paused);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetLowpass(bool isLowPass);
 
 	UFUNCTION(BlueprintCallable)
 	void UpgradeWeapon(FName Id);
@@ -196,9 +202,6 @@ private:
 	void SelectCandidateInteractable(AActor* Selected);
 	
 	void UnselectCandidateInteractable();
-	
-	UFUNCTION(BlueprintCallable)
-	void AddXP(int32 Amount);
 	
 	UFUNCTION(BlueprintCallable)
 	void PerformUpgraderRitual();

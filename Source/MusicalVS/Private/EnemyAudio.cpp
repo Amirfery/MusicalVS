@@ -30,7 +30,7 @@ void AEnemyAudio::UpdateVolume()
 	float MinDistance = TNumericLimits<float>::Max();
 	FVector MinToEnemy = FVector::ZeroVector;
 	FVector CharacterLocation = Character->GetActorLocation();
-	for (TObjectPtr<AEnemy> Enemy : Enemies)
+	for (const TObjectPtr Enemy : Enemies)
 	{
 		FVector ToEnemy = Enemy->GetActorLocation() - CharacterLocation;
 		float Distance = ToEnemy.SizeSquared();
@@ -83,6 +83,11 @@ void AEnemyAudio::Initialize(UEnemyData* NewEnemyData)
 void AEnemyAudio::SetPaused(const bool Paused)
 {
 	FModAudio->SetPaused(Paused);
+}
+
+void AEnemyAudio::SetLowPass(float lowPass)
+{
+	FModAudio->SetParameter(FName(TEXT("LowPass")), lowPass);
 }
 
 void AEnemyAudio::SetEventPercentage(float Percentage)
