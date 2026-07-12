@@ -32,7 +32,6 @@ void APoolItem::SetEnable(bool Enable)
 		SetActorTickEnabled(true);
 	} else
 	{
-		SetActorLocation(ParentPoolManager->GetActorLocation());
 		SetActorHiddenInGame(true);
 		SetActorEnableCollision(false);
 		SetActorTickEnabled(false);

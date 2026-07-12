@@ -119,16 +119,19 @@ void ACharacterSystem::AddNewPhaseEnemyAudios(TArray<FEnemySpawnInfo> NewPhaseEn
 	for (auto& Element : NewPhaseEnemies)
 	{
 		UEnemyData* EnemyData = Element.EnemyDataAsset;
-		if (EnemyData->SoundEvent != nullptr && !ActiveEnemyAudios.Contains(EnemyData->DisplayName))
+		if (EnemyData->SoundEvent != nullptr)
 		{
-			TObjectPtr<AEnemyAudio> NewEnemyAudio = GetWorld()->SpawnActor<AEnemyAudio>();
-			NewEnemyAudio->Initialize(EnemyData);
-			NewEnemyAudio->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-			NewEnemyAudios.Add(EnemyData->DisplayName, NewEnemyAudio);
-		}
-		else
-		{
-			NewEnemyAudios.Add(EnemyData->DisplayName, ActiveEnemyAudios.Find(EnemyData->DisplayName)->Get());
+			if (!ActiveEnemyAudios.Contains(EnemyData->DisplayName))
+			{
+				TObjectPtr<AEnemyAudio> NewEnemyAudio = GetWorld()->SpawnActor<AEnemyAudio>();
+				NewEnemyAudio->Initialize(EnemyData);
+				NewEnemyAudio->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+				NewEnemyAudios.Add(EnemyData->DisplayName, NewEnemyAudio);
+			}
+			else
+			{
+				NewEnemyAudios.Add(EnemyData->DisplayName, ActiveEnemyAudios.Find(EnemyData->DisplayName)->Get());
+			}
 		}
 	}
 	

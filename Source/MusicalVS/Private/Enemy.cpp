@@ -38,7 +38,6 @@ void AEnemy::BeginPlay()
 	DynMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorld()->GetSubsystem<UTickSubsystem>()->EnemyTickDelegate.AddDynamic(this, &AEnemy::TickEnemy);
 	Stats->OnEnemyDied.AddDynamic(this, &AEnemy::Die);
-	CapsuleComponent->OnComponentHit.AddDynamic(this, &AEnemy::OnCapsuleHit);
 }
 
 void AEnemy::PostLoad()
@@ -76,14 +75,15 @@ void AEnemy::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 {
 	if (!OtherActor || OtherActor == this || OtherActor == PlayerCharacter || OtherActor->ActorHasTag(FName("Enemy")))
 		return;
-	if (FMath::Abs(Hit.Normal.Z) < 0.5f)
+	if (FMath::Abs(Hit.Normal.Z) < 0.8f)
 	{
 		FVector ForwardVector = GetActorForwardVector();
 		FVector SurfaceDirection = -Hit.Normal; 
 		SurfaceDirection.Z = 0.f;
 		SurfaceDirection.Normalize();
 		float ForwardDot = FVector::DotProduct(ForwardVector, SurfaceDirection);
-		if (ForwardDot > 0.7f)
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Here %f"), ForwardDot));
+		if (ForwardDot > 0.5f)
 		{
 			// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Here %f"), Stats->GetMovementSpeed()));
 			bShouldClimb = true;
@@ -97,6 +97,30 @@ void AEnemy::Tick(float DeltaTime)
 
 	if (!bIsAlive || UGameplayStatics::IsGamePaused(GetWorld()))
 		return;
+	
+	FHitResult HitResult;
+	FVector Start = GetActorLocation();
+	FCollisionShape Shape = FCollisionShape::MakeSphere(CapsuleComponent->GetScaledCapsuleRadius() * 0.8);
+	FCollisionQueryParams Params = FCollisionQueryParams();
+	Start.Z = Start.Z - CapsuleComponent->GetScaledCapsuleHalfHeight() + Shape.GetSphereRadius() * 1.2;
+	Params.AddIgnoredActor(this);
+	bool bHit = GetWorld()->SweepSingleByChannel(HitResult, Start, Start + Mesh->GetRightVector() * Shape.GetSphereRadius() * 1.5, FQuat::Identity, ECC_Visibility, Shape, Params);
+	UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Start + Mesh->GetRightVector() * Shape.GetSphereRadius() * 1.5, Shape.GetSphereRadius(), 12, FLinearColor::Blue);
+	if (bHit)
+	{
+		AActor* OtherActor = HitResult.GetActor();
+		if (!OtherActor || OtherActor == this || OtherActor == PlayerCharacter || OtherActor->ActorHasTag(FName("Enemy")))
+			bShouldClimb = false;
+		else
+		{
+			UKismetSystemLibrary::DrawDebugSphere(GetWorld(), HitResult.Location, Shape.GetSphereRadius(), 12, FLinearColor::Red);
+			bShouldClimb = true;
+		}
+	}
+	else
+	{
+		bShouldClimb = false;
+	}
 
 	FVector ToPlayer = PlayerCharacter->GetActorLocation() - GetActorLocation();
 	ToPlayer.Z = 0.f;
@@ -112,7 +136,6 @@ void AEnemy::Tick(float DeltaTime)
 	if (bShouldClimb)
 	{
 		CapsuleComponent->SetPhysicsLinearVelocity(FVector::UnitZ() * EnemyData->ClimbSpeed);
-		bShouldClimb = false;
 	}
 	else if (CurrentVelocity.Size2D() < EnemyData->Speed)
 	{
@@ -127,7 +150,11 @@ void AEnemy::Tick(float DeltaTime)
 	// Relocate
 	float Distance = FVector::Dist(PlayerCharacter->GetActorLocation(), GetActorLocation());
 	if (Distance > MaxDistance)
+	{
 		AEnemyManager::GetInstance()->RelocateEnemy(this);
+		CapsuleComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);
+		CapsuleComponent->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	}
 } 
 
 void AEnemy::Die()

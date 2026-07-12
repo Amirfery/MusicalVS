@@ -31,7 +31,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;
 
-	void RelocateEnemy(APoolItem* Enemy) const;
+	void RelocateEnemy(AEnemy* Enemy) const;
 
 	void EnemyDied(AEnemy* Enemy);
 
@@ -88,6 +88,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxDistance;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float MaxHeight = 5000;
 
 	UPROPERTY(Transient)
 	int32 CurrentAliveEnemies;

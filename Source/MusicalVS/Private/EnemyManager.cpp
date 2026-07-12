@@ -8,7 +8,9 @@
 #include "PoolManager.h"
 #include "PoolSystem.h"
 #include "TickSubsystem.h"
+#include "Components/CapsuleComponent.h"
 #include "DataAssets/EnemyData.h"
+#include "GameFramework/PhysicsVolume.h"
 #include "Systems/CharacterSystem.h"
 
 TObjectPtr<AEnemyManager> AEnemyManager::Instance = nullptr;
@@ -56,7 +58,7 @@ void AEnemyManager::Tick(float DeltaSeconds)
 	TempEnemy->SetFloatValues({MaxDistance});
 	AEnemy* Enemy = Cast<AEnemy>(TempEnemy);
 	Enemy->Initialize(ChosenEnemy);
-	RelocateEnemy(TempEnemy);
+	RelocateEnemy(Enemy);
 	
 	bIsInCooldown = true;
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimer,
@@ -81,15 +83,24 @@ void AEnemyManager::PostInitializeComponents()
 	Instance = this;
 }
 
-void AEnemyManager::RelocateEnemy(APoolItem* Enemy) const
+void AEnemyManager::RelocateEnemy(AEnemy* Enemy) const
 {
 	FVector BoxExtent{};
 	FVector BoxCenter{};
 	Enemy->GetActorBounds(true, BoxCenter, BoxExtent);
 	float Radius = FMath::Sqrt(FMath::RandRange(FMath::Pow(InnerCircleRadius, 2), FMath::Pow(OuterCircleRadius, 2)));
 	float Angle = FMath::RandRange(0.0f, 2 * PI);
-	Enemy->SetActorLocation(
-		ACharacterSystem::GetCharacterInstance()->GetActorLocation() + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, BoxExtent.Z));
+	FVector NewLocation = ACharacterSystem::GetCharacterInstance()->GetActorLocation();
+	NewLocation.Z = MaxHeight;
+	NewLocation = NewLocation + FVector(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, 0);
+	FVector End = NewLocation;
+	End.Z = 0;
+	FHitResult HitResult;
+	bool bHit = GetWorld()->SweepSingleByChannel(HitResult, NewLocation, End, FQuat::Identity, ECC_Visibility, Enemy->CapsuleComponent->GetCollisionShape());
+	if (bHit)
+	{
+		Enemy->SetActorLocation(HitResult.Location);
+	}
 }
 
 void AEnemyManager::EnemyDied(AEnemy* Enemy)
