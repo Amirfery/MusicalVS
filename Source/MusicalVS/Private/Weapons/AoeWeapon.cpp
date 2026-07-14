@@ -81,7 +81,6 @@ void AAoeWeapon::Attack_Implementation()
 	Super::Attack_Implementation();
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
-
 	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
 
 	EnemiesInRange = Overlaps;
@@ -105,10 +104,10 @@ void AAoeWeapon::Attack_Implementation()
 void AAoeWeapon::FirstMarkerAttack_Implementation()
 {
 	Super::FirstMarkerAttack_Implementation();
+	Character->FirstMarkerAttack();
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
-
-	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, Character->GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
 
 	EnemiesInRange = Overlaps;
 	for (auto EnemyOverlap : EnemiesInRange)
@@ -127,7 +126,7 @@ void AAoeWeapon::SecondMarkerAttack_Implementation()
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
 
-	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, Character->GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
 
 	EnemiesInRange = Overlaps;
 	for (auto EnemyOverlap : EnemiesInRange)
@@ -146,7 +145,7 @@ void AAoeWeapon::ThirdMarkerAttack_Implementation()
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
 
-	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, Character->GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
 
 	EnemiesInRange = Overlaps;
 	for (auto EnemyOverlap : EnemiesInRange)
@@ -172,7 +171,7 @@ void AAoeWeapon::FourthMarkerAttack_Implementation()
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
 
-	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
+	const bool bHasHit = GetWorld()->OverlapMultiByChannel( Overlaps, Character->GetActorLocation(), FQuat::Identity, ECC_Target, Sphere );
 
 	EnemiesInRange = Overlaps;
 	for (auto EnemyOverlap : EnemiesInRange)

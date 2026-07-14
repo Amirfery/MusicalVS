@@ -432,6 +432,22 @@ void ACharacterSystem::StopSolo()
 	}
 }
 
+void ACharacterSystem::SecondMarkerAttack_Implementation()
+{
+}
+
+void ACharacterSystem::FirstMarkerAttack_Implementation()
+{
+}
+
+void ACharacterSystem::FourthMarkerAttack_Implementation()
+{
+}
+
+void ACharacterSystem::ThirdMarkerAttack_Implementation()
+{
+}
+
 void ACharacterSystem::Init()
 {
 }

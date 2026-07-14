@@ -186,6 +186,15 @@ public:
 
 	UFUNCTION()
 	void StopSolo();
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void FirstMarkerAttack();
+	UFUNCTION(BlueprintNativeEvent)
+	void SecondMarkerAttack();
+	UFUNCTION(BlueprintNativeEvent)
+	void ThirdMarkerAttack();
+	UFUNCTION(BlueprintNativeEvent)
+	void FourthMarkerAttack();
 
 private:
 	UFUNCTION(BlueprintCallable)
